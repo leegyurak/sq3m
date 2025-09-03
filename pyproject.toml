@@ -47,6 +47,7 @@ sqlllm = "sqlllm.main:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["sqlllm"]
+include = ["sqlllm/py.typed"]
 
 [tool.ruff]
 target-version = "py310"
@@ -110,6 +111,7 @@ module = [
     "pymysql.*",
     "psycopg2.*",
     "rich.*",
+    "click.*",
 ]
 ignore_missing_imports = true
 
