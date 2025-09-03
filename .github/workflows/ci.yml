@@ -31,15 +31,15 @@ jobs:
 
     - name: Run Ruff linter
       run: |
-        uv run ruff check . --output-format=github
+        PYTHONPATH=. uv run ruff check . --output-format=github
 
     - name: Run Ruff formatter check
       run: |
-        uv run ruff format --check .
+        PYTHONPATH=. uv run ruff format --check .
 
     - name: Run MyPy type checker
       run: |
-        uv run mypy --install-types --non-interactive
+        PYTHONPATH=. uv run mypy --install-types --non-interactive
 
   test:
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
 
     - name: Run tests
       run: |
-        uv run pytest -v --cov=sqlllm --cov-report=xml --cov-report=term-missing
+        PYTHONPATH=. uv run pytest -v --cov=sqlllm --cov-report=xml --cov-report=term-missing
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4
@@ -96,4 +96,4 @@ jobs:
 
     - name: Run pre-commit
       run: |
-        uv run pre-commit run --all-files
+        PYTHONPATH=. uv run pre-commit run --all-files
