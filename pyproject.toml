@@ -97,7 +97,7 @@ namespace_packages = true
 explicit_package_bases = true
 show_error_codes = true
 pretty = true
-files = ["sqlllm"]
+packages = ["sqlllm"]
 
 # Import settings
 ignore_missing_imports = false
