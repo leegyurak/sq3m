@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import asyncio
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
 import pytest
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Generator
 
 # Import all fixtures from the fixtures module
 pytest_plugins = ["tests.fixtures.database_fixtures"]
@@ -19,41 +24,44 @@ def pytest_configure(config: pytest.Config) -> None:
     )
 
 
-@pytest.fixture(scope="function")
-def cleanup_chat_sessions():
+@pytest.fixture(scope="function")  # type: ignore[misc]
+def cleanup_chat_sessions() -> Generator[Callable[[Any], None], None, None]:
     """Fixture to ensure chat sessions are cleaned up after each test."""
     chat_services = []
     session_files = []
-    
-    def register_service(service):
+
+    def register_service(service: Any) -> None:
         """Register a chat service for cleanup."""
         chat_services.append(service)
         # Also track the service's history directory for cleanup
-        if hasattr(service, 'history_dir'):
+        if hasattr(service, "history_dir"):
             session_files.extend(service.history_dir.glob("*.md"))
-    
+
     yield register_service
-    
+
     # Cleanup after test
     for service in chat_services:
         try:
             # Close active sessions
-            if hasattr(service, 'close_session') and hasattr(service, 'current_session_file'):
-                if service.current_session_file is not None:
-                    asyncio.run(service.close_session())
-            
+            if (
+                hasattr(service, "close_session")
+                and hasattr(service, "current_session_file")
+                and service.current_session_file is not None
+            ):
+                asyncio.run(service.close_session())
+
             # Remove all session files from the service's history directory
-            if hasattr(service, 'history_dir') and service.history_dir.exists():
+            if hasattr(service, "history_dir") and service.history_dir.exists():
                 for md_file in service.history_dir.glob("*.md"):
                     try:
                         if md_file.is_file() and _is_session_file(md_file):
                             md_file.unlink()
                     except Exception:
                         pass
-                        
+
         except Exception:
             pass  # Ignore cleanup errors
-    
+
     # Additional cleanup for any tracked session files
     for session_file in session_files:
         try:
@@ -63,14 +71,14 @@ def cleanup_chat_sessions():
             pass
 
 
-@pytest.fixture(scope="function")
-def temp_chat_dir():
+@pytest.fixture(scope="function")  # type: ignore[misc]
+def temp_chat_dir() -> Generator[Path, None, None]:
     """Create a temporary directory for chat sessions."""
     temp_dir = tempfile.mkdtemp(prefix="sqlllm_test_chat_")
     temp_path = Path(temp_dir)
-    
+
     yield temp_path
-    
+
     # Cleanup: Remove all chat session files
     try:
         if temp_path.exists():
@@ -83,51 +91,53 @@ def temp_chat_dir():
         pass  # Ignore cleanup errors
 
 
-@pytest.fixture(autouse=True)
-def cleanup_temp_files():
+@pytest.fixture(autouse=True)  # type: ignore[misc]
+def cleanup_temp_files() -> Generator[None, None, None]:
     """Auto-cleanup fixture to remove temporary files after each test."""
     # Track directories and files created during test
-    created_files = []
     original_cwd = Path.cwd()
-    
+
     yield
-    
+
     # Clean up any remaining temporary chat files in multiple locations
     import tempfile
     import time
+
     current_time = time.time()
-    
+
     # List of directories to check for cleanup
     cleanup_dirs = [
         Path(tempfile.gettempdir()),  # System temp directory
         original_cwd,  # Current working directory
         original_cwd / "tests",  # Tests directory
-        Path("."),  # Current directory when test runs
+        Path(),  # Current directory when test runs
     ]
-    
+
     for temp_dir in cleanup_dirs:
         if not temp_dir.exists():
             continue
-            
+
         try:
             # Patterns for session/conversation markdown files
             patterns = [
                 "*.md",  # All markdown files
-                "*session*.md", 
+                "*session*.md",
                 "*conversation*.md",
                 "*chat*.md",
                 "sqlllm_test_*",
                 "*_test_session_*",
                 "*SQLLLM*session*.md",
-                "[0-9]*_[0-9]*_*.md"  # Timestamp pattern files
+                "[0-9]*_[0-9]*_*.md",  # Timestamp pattern files
             ]
-            
+
             for pattern in patterns:
                 for file in temp_dir.glob(pattern):
                     if file.is_file():
                         try:
                             # Check if file looks like a session file by checking content
-                            if _is_session_file(file) and _is_recent_test_file(file, current_time):
+                            if _is_session_file(file) and _is_recent_test_file(
+                                file, current_time
+                            ):
                                 file.unlink()
                         except Exception:
                             pass  # Ignore individual file cleanup errors
@@ -140,26 +150,30 @@ def _is_session_file(file_path: Path) -> bool:
     try:
         # Check filename patterns
         name = file_path.name.lower()
-        if any(keyword in name for keyword in ['session', 'conversation', 'chat', 'sqlllm']):
+        if any(
+            keyword in name for keyword in ["session", "conversation", "chat", "sqlllm"]
+        ):
             return True
-            
+
         # Check if filename matches timestamp pattern (YYYYMMDD_HHMMSS_*.md)
-        if name.endswith('.md'):
-            parts = name.replace('.md', '').split('_')
+        if name.endswith(".md"):
+            parts = name.replace(".md", "").split("_")
             if len(parts) >= 3 and parts[0].isdigit() and parts[1].isdigit():
                 return True
-        
+
         # Check file content for session markers
-        content = file_path.read_text(encoding='utf-8', errors='ignore')[:500]  # First 500 chars
+        content = file_path.read_text(encoding="utf-8", errors="ignore")[
+            :500
+        ]  # First 500 chars
         session_markers = [
-            '# SQLLLM Conversation Session',
-            '**Session ID:**',
-            '**Started:**',
-            '## User Query',
-            '## Generated SQL',
-            'SQLLLM Conversation'
+            "# SQLLLM Conversation Session",
+            "**Session ID:**",
+            "**Started:**",
+            "## User Query",
+            "## Generated SQL",
+            "SQLLLM Conversation",
         ]
-        
+
         return any(marker in content for marker in session_markers)
     except Exception:
         return False

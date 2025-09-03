@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from sqlllm.domain.entities.database import (
     Column,
     DatabaseConnection,
@@ -29,7 +27,7 @@ class TestColumn:
             default_value="default",
             comment="Test column",
         )
-        
+
         assert column.name == "test_column"
         assert column.data_type == "varchar"
         assert column.is_nullable is True
@@ -44,7 +42,7 @@ class TestColumn:
             is_nullable=False,
             is_primary_key=True,
         )
-        
+
         assert column.default_value is None
         assert column.comment is None
 
@@ -57,7 +55,7 @@ class TestIndex:
             is_unique=True,
             index_type="BTREE",
         )
-        
+
         assert index.name == "test_index"
         assert index.columns == ["col1", "col2"]
         assert index.is_unique is True
@@ -69,12 +67,14 @@ class TestIndex:
             columns=["col1"],
             is_unique=False,
         )
-        
+
         assert index.index_type is None
 
 
 class TestTable:
-    def test_table_creation(self, sample_columns: list[Column], sample_indexes: list[Index]) -> None:
+    def test_table_creation(
+        self, sample_columns: list[Column], sample_indexes: list[Index]
+    ) -> None:
         table = Table(
             name="test_table",
             columns=sample_columns,
@@ -82,20 +82,22 @@ class TestTable:
             comment="Test table",
             purpose="Testing purposes",
         )
-        
+
         assert table.name == "test_table"
         assert table.columns == sample_columns
         assert table.indexes == sample_indexes
         assert table.comment == "Test table"
         assert table.purpose == "Testing purposes"
 
-    def test_table_optional_fields(self, sample_columns: list[Column], sample_indexes: list[Index]) -> None:
+    def test_table_optional_fields(
+        self, sample_columns: list[Column], sample_indexes: list[Index]
+    ) -> None:
         table = Table(
             name="simple_table",
             columns=sample_columns,
             indexes=sample_indexes,
         )
-        
+
         assert table.comment is None
         assert table.purpose is None
 
@@ -107,7 +109,7 @@ class TestDatabaseSchema:
             tables=sample_tables,
             database_type=DatabaseType.MYSQL,
         )
-        
+
         assert schema.name == "test_schema"
         assert schema.tables == sample_tables
         assert schema.database_type == DatabaseType.MYSQL
@@ -123,7 +125,7 @@ class TestDatabaseConnection:
             password="password",
             database_type=DatabaseType.MYSQL,
         )
-        
+
         assert connection.host == "localhost"
         assert connection.port == 3306
         assert connection.database == "test_db"
@@ -140,7 +142,7 @@ class TestSQLQuery:
             explanation="Retrieves all user records",
             confidence=0.95,
         )
-        
+
         assert query.natural_language == "Show all users"
         assert query.sql == "SELECT * FROM users"
         assert query.explanation == "Retrieves all user records"
@@ -151,6 +153,6 @@ class TestSQLQuery:
             natural_language="Simple query",
             sql="SELECT 1",
         )
-        
+
         assert query.explanation is None
         assert query.confidence is None

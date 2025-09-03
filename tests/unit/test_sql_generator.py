@@ -11,15 +11,15 @@ from sqlllm.domain.interfaces.llm_service import LLMService
 
 
 class TestSQLGenerator:
-    @pytest.fixture
+    @pytest.fixture  # type: ignore[misc]
     def mock_database_repository(self) -> Mock:
         return Mock(spec=DatabaseRepository)
 
-    @pytest.fixture
+    @pytest.fixture  # type: ignore[misc]
     def mock_llm_service(self) -> Mock:
         return Mock(spec=LLMService)
 
-    @pytest.fixture
+    @pytest.fixture  # type: ignore[misc]
     def sql_generator(
         self, mock_database_repository: Mock, mock_llm_service: Mock
     ) -> SQLGenerator:
@@ -152,16 +152,16 @@ class TestSQLGenerator:
     ) -> None:
         # Setup - First attempt fails, retries also fail
         mock_llm_service.generate_sql.return_value = sample_sql_query
-        
+
         # Create a corrected query for retry attempts
         corrected_query = SQLQuery(
             natural_language="Show all users",
             sql="SELECT id, name FROM users",
             explanation="Corrected query",
-            confidence=0.8
+            confidence=0.8,
         )
         mock_llm_service.generate_sql_with_error_feedback.return_value = corrected_query
-        
+
         # All attempts fail
         mock_database_repository.execute_query.side_effect = Exception("Database error")
 
@@ -185,19 +185,19 @@ class TestSQLGenerator:
     ) -> None:
         # Setup - First attempt fails, second succeeds
         mock_llm_service.generate_sql.return_value = sample_sql_query
-        
+
         corrected_query = SQLQuery(
             natural_language="Show all users",
             sql="SELECT id, name FROM users",
             explanation="Corrected query after error",
-            confidence=0.9
+            confidence=0.9,
         )
         mock_llm_service.generate_sql_with_error_feedback.return_value = corrected_query
-        
+
         # First call fails, second succeeds
         mock_database_repository.execute_query.side_effect = [
             Exception("Column 'invalid_col' doesn't exist"),
-            [{"id": 1, "name": "John"}]
+            [{"id": 1, "name": "John"}],
         ]
 
         # Execute
@@ -210,7 +210,10 @@ class TestSQLGenerator:
         assert results == [{"id": 1, "name": "John"}]
         assert mock_database_repository.execute_query.call_count == 2
         mock_llm_service.generate_sql_with_error_feedback.assert_called_once_with(
-            "Show all users", sample_tables, "SELECT * FROM users", "Column 'invalid_col' doesn't exist"
+            "Show all users",
+            sample_tables,
+            "SELECT * FROM users",
+            "Column 'invalid_col' doesn't exist",
         )
 
     def test_generate_and_execute_max_retries_parameter(
@@ -227,10 +230,10 @@ class TestSQLGenerator:
             natural_language="Show all users",
             sql="SELECT id, name FROM users",
             explanation="Corrected query",
-            confidence=0.8
+            confidence=0.8,
         )
         mock_llm_service.generate_sql_with_error_feedback.return_value = corrected_query
-        
+
         # All attempts fail
         mock_database_repository.execute_query.side_effect = Exception("Database error")
 

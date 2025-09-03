@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from ..entities.database import SQLQuery, Table
+if TYPE_CHECKING:
+    from ..entities.database import SQLQuery, Table
 
 
 class LLMService(ABC):
@@ -19,15 +21,17 @@ class LLMService(ABC):
         pass
 
     @abstractmethod
-    async def generate_sql_async(self, natural_language: str, tables: list[Table]) -> SQLQuery:
+    async def generate_sql_async(
+        self, natural_language: str, tables: list[Table]
+    ) -> SQLQuery:
         pass
-    
+
     @abstractmethod
     def generate_sql_with_error_feedback(
-        self, 
-        natural_language: str, 
-        tables: list[Table], 
-        previous_sql: str, 
-        error_message: str
+        self,
+        natural_language: str,
+        tables: list[Table],
+        previous_sql: str,
+        error_message: str,
     ) -> SQLQuery:
         pass

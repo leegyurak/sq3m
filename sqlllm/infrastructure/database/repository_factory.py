@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-from typing import Type
-from ...domain.interfaces.database_repository import DatabaseRepository
+from typing import TYPE_CHECKING
+
 from ...domain.entities.database import DatabaseType
 from .mysql_repository import MySQLRepository
 from .postgresql_repository import PostgreSQLRepository
 
+if TYPE_CHECKING:
+    from ...domain.interfaces.database_repository import DatabaseRepository
+
 
 class DatabaseRepositoryFactory:
-    _repositories: dict[DatabaseType, Type[DatabaseRepository]] = {
+    _repositories: dict[DatabaseType, type[DatabaseRepository]] = {
         DatabaseType.MYSQL: MySQLRepository,
         DatabaseType.POSTGRESQL: PostgreSQLRepository,
     }

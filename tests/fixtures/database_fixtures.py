@@ -13,7 +13,7 @@ from sqlllm.domain.entities.database import (
 )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_column() -> Column:
     return Column(
         name="id",
@@ -25,7 +25,7 @@ def sample_column() -> Column:
     )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_columns() -> list[Column]:
     return [
         Column(
@@ -52,23 +52,27 @@ def sample_columns() -> list[Column]:
     ]
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_index() -> Index:
     return Index(
         name="idx_user_email", columns=["email"], is_unique=True, index_type="BTREE"
     )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_indexes() -> list[Index]:
     return [
         Index(name="PRIMARY", columns=["id"], is_unique=True, index_type="BTREE"),
-        Index(name="idx_user_email", columns=["email"], is_unique=True, index_type="BTREE"),
-        Index(name="idx_user_name", columns=["name"], is_unique=False, index_type="BTREE"),
+        Index(
+            name="idx_user_email", columns=["email"], is_unique=True, index_type="BTREE"
+        ),
+        Index(
+            name="idx_user_name", columns=["name"], is_unique=False, index_type="BTREE"
+        ),
     ]
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_table(sample_columns: list[Column], sample_indexes: list[Index]) -> Table:
     return Table(
         name="users",
@@ -79,7 +83,7 @@ def sample_table(sample_columns: list[Column], sample_indexes: list[Index]) -> T
     )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_tables(sample_table: Table) -> list[Table]:
     products_table = Table(
         name="products",
@@ -112,18 +116,18 @@ def sample_tables(sample_table: Table) -> list[Table]:
         comment="Product catalog table",
         purpose="Stores product information including names and prices",
     )
-    
+
     return [sample_table, products_table]
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_database_schema(sample_tables: list[Table]) -> DatabaseSchema:
     return DatabaseSchema(
         name="test_db", tables=sample_tables, database_type=DatabaseType.MYSQL
     )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_database_connection() -> DatabaseConnection:
     return DatabaseConnection(
         host="localhost",
@@ -135,7 +139,7 @@ def sample_database_connection() -> DatabaseConnection:
     )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def sample_sql_query() -> SQLQuery:
     return SQLQuery(
         natural_language="Show all users",
@@ -145,7 +149,7 @@ def sample_sql_query() -> SQLQuery:
     )
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def postgresql_connection() -> DatabaseConnection:
     return DatabaseConnection(
         host="localhost",

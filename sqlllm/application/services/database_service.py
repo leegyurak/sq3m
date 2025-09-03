@@ -1,38 +1,52 @@
 from __future__ import annotations
 
-from ...domain.interfaces.database_repository import DatabaseRepository
-from ...domain.interfaces.llm_service import LLMService
-from ...domain.entities.database import DatabaseConnection, DatabaseType, SQLQuery, Table
+from typing import TYPE_CHECKING, Any
+
 from ...infrastructure.database.repository_factory import DatabaseRepositoryFactory
 from ...infrastructure.history.markdown_history import MarkdownHistory
 from ..use_cases.database_analyzer import DatabaseAnalyzer
 from ..use_cases.sql_generator import SQLGenerator
 
+if TYPE_CHECKING:
+    from ...domain.entities.database import (
+        DatabaseConnection,
+        SQLQuery,
+        Table,
+    )
+    from ...domain.interfaces.database_repository import DatabaseRepository
+    from ...domain.interfaces.llm_service import LLMService
+
 
 class DatabaseService:
     def __init__(self, llm_service: LLMService):
         self.llm_service = llm_service
-        self.database_repository = None
-        self.database_analyzer = None
-        self.sql_generator = None
+        self.database_repository: DatabaseRepository | None = None
+        self.database_analyzer: DatabaseAnalyzer | None = None
+        self.sql_generator: SQLGenerator | None = None
         self.tables_cache: list[Table] = []
         self.history = MarkdownHistory()
 
     def connect_to_database(self, connection: DatabaseConnection) -> bool:
         try:
-            self.database_repository = DatabaseRepositoryFactory.create(connection.database_type)
-            
+            self.database_repository = DatabaseRepositoryFactory.create(
+                connection.database_type
+            )
+
             # Test connection first
             if not self.database_repository.test_connection(connection):
                 return False
-            
+
             # Establish connection
             self.database_repository.connect(connection)
-            
+
             # Initialize use cases
-            self.database_analyzer = DatabaseAnalyzer(self.database_repository, self.llm_service)
-            self.sql_generator = SQLGenerator(self.database_repository, self.llm_service, self.history)
-            
+            self.database_analyzer = DatabaseAnalyzer(
+                self.database_repository, self.llm_service
+            )
+            self.sql_generator = SQLGenerator(
+                self.database_repository, self.llm_service, self.history
+            )
+
             return True
         except Exception:
             return False
@@ -40,7 +54,7 @@ class DatabaseService:
     def analyze_database_schema(self) -> dict[str, str]:
         if not self.database_analyzer:
             raise ValueError("Database not connected")
-        
+
         schema = self.database_analyzer.analyze_schema()
         self.tables_cache = schema.tables
         return self.database_analyzer.get_table_purposes()
@@ -48,20 +62,24 @@ class DatabaseService:
     def generate_sql_from_natural_language(self, natural_language: str) -> SQLQuery:
         if not self.sql_generator:
             raise ValueError("Database not connected")
-        
+
         return self.sql_generator.generate_sql(natural_language, self.tables_cache)
 
-    def execute_query(self, sql: str) -> list[dict]:
+    def execute_query(self, sql: str) -> list[dict[str, Any]]:
         if not self.database_repository:
             raise ValueError("Database not connected")
-        
+
         return self.database_repository.execute_query(sql)
 
-    def generate_and_execute_query(self, natural_language: str, max_retries: int = 2) -> tuple[SQLQuery, list[dict]]:
+    def generate_and_execute_query(
+        self, natural_language: str, max_retries: int = 2
+    ) -> tuple[SQLQuery, list[dict[str, Any]]]:
         if not self.sql_generator:
             raise ValueError("Database not connected")
-        
-        return self.sql_generator.generate_and_execute(natural_language, self.tables_cache, max_retries)
+
+        return self.sql_generator.generate_and_execute(
+            natural_language, self.tables_cache, max_retries
+        )
 
     def get_tables(self) -> list[Table]:
         return self.tables_cache.copy()

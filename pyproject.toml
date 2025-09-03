@@ -30,9 +30,10 @@ dependencies = [
     "sqlparse>=0.4.0",
     "rich>=13.0.0",
     "pydantic>=2.0.0",
-    "aiofiles>=23.0.0",
     "markdown>=3.5.0",
     "psutil>=5.9.0",
+    "types-aiofiles>=24.1.0.20250822",
+    "aiofiles>=24.1.0",
 ]
 
 [project.optional-dependencies]
@@ -79,7 +80,8 @@ ignore = [
     "E501",  # line too long, handled by black
     "B008",  # do not perform function calls in argument defaults
     "C901",  # too complex
-    "B904",  # check for raise ... from err or raise ... from None
+    "B904",   # check for raise ... from err or raise ... from None
+    "PERF203", # try-except within a loop incurs performance overhead
 ]
 exclude = [
     ".bzr",
@@ -178,4 +180,6 @@ exclude_lines = [
 dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
+    "types-aiofiles>=24.1.0.20250822",
+    "types-psutil>=7.0.0.20250822",
 ]

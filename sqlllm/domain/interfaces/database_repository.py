@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any
 
-from ..entities.database import DatabaseConnection, DatabaseSchema, Table
+if TYPE_CHECKING:
+    from ..entities.database import DatabaseConnection, DatabaseSchema, Table
 
 
 class DatabaseRepository(ABC):
@@ -23,7 +25,7 @@ class DatabaseRepository(ABC):
         pass
 
     @abstractmethod
-    def execute_query(self, sql: str) -> list[dict]:
+    def execute_query(self, sql: str) -> list[dict[str, Any]]:
         pass
 
     @abstractmethod
@@ -31,5 +33,7 @@ class DatabaseRepository(ABC):
         pass
 
     @abstractmethod
-    def get_table_sample_rows(self, table_name: str, limit: int = 10) -> list[dict]:
+    def get_table_sample_rows(
+        self, table_name: str, limit: int = 10
+    ) -> list[dict[str, Any]]:
         pass

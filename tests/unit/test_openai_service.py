@@ -9,28 +9,35 @@ from sqlllm.infrastructure.llm.openai_service import OpenAIService
 
 
 class TestOpenAIService:
-    @pytest.fixture
+    @pytest.fixture  # type: ignore[misc]
     def mock_openai_client(self) -> Mock:
         return Mock()
 
-    @pytest.fixture
+    @pytest.fixture  # type: ignore[misc]
     def openai_service(self, mock_openai_client: Mock) -> OpenAIService:
-        with patch('sqlllm.infrastructure.llm.openai_service.OpenAI') as mock_openai, \
-             patch('sqlllm.infrastructure.llm.openai_service.AsyncOpenAI'):
+        with (
+            patch("sqlllm.infrastructure.llm.openai_service.OpenAI") as mock_openai,
+            patch("sqlllm.infrastructure.llm.openai_service.AsyncOpenAI"),
+        ):
             mock_openai.return_value = mock_openai_client
             service = OpenAIService("test-api-key", "gpt-3.5-turbo")
             return service
 
     def test_openai_service_initialization(self) -> None:
-        with patch('sqlllm.infrastructure.llm.openai_service.OpenAI') as mock_openai, \
-             patch('sqlllm.infrastructure.llm.openai_service.AsyncOpenAI'):
+        with (
+            patch("sqlllm.infrastructure.llm.openai_service.OpenAI") as mock_openai,
+            patch("sqlllm.infrastructure.llm.openai_service.AsyncOpenAI"),
+        ):
             service = OpenAIService("test-api-key", "gpt-4")
-            
+
             mock_openai.assert_called_once_with(api_key="test-api-key", base_url=None)
             assert service.model == "gpt-4"
 
     def test_openai_service_default_model(self) -> None:
-        with patch('sqlllm.infrastructure.llm.openai_service.OpenAI'), patch('sqlllm.infrastructure.llm.openai_service.AsyncOpenAI'):
+        with (
+            patch("sqlllm.infrastructure.llm.openai_service.OpenAI"),
+            patch("sqlllm.infrastructure.llm.openai_service.AsyncOpenAI"),
+        ):
             service = OpenAIService("test-api-key")
             assert service.model == "gpt-3.5-turbo"
 
@@ -52,7 +59,7 @@ class TestOpenAIService:
         # Assert
         assert result == "This table stores user information"
         mock_openai_client.chat.completions.create.assert_called_once()
-        
+
         # Check call arguments
         call_args = mock_openai_client.chat.completions.create.call_args
         assert call_args[1]["model"] == "gpt-3.5-turbo"
@@ -71,7 +78,10 @@ class TestOpenAIService:
         result = openai_service.infer_table_purpose(sample_table)
 
         # Assert
-        assert "Could not infer purpose for table users: API Error" in result
+        assert (
+            result is not None
+            and "Could not infer purpose for table users: API Error" in result
+        )
 
     def test_generate_sql_success_with_valid_json(
         self,
@@ -82,13 +92,13 @@ class TestOpenAIService:
         # Setup mock response with valid JSON
         mock_response = Mock()
         mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = '''
+        mock_response.choices[0].message.content = """
         {
             "sql": "SELECT * FROM users",
             "explanation": "This query selects all users",
             "confidence": 90
         }
-        '''
+        """
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         # Execute
@@ -138,8 +148,14 @@ class TestOpenAIService:
         # Assert
         assert isinstance(result, SQLQuery)
         assert result.natural_language == "Show all users"
-        assert "-- Error generating SQL: API Error" in result.sql
-        assert "Failed to generate SQL: API Error" in result.explanation
+        assert (
+            result.sql is not None
+            and "-- Error generating SQL: API Error" in result.sql
+        )
+        assert (
+            result.explanation is not None
+            and "Failed to generate SQL: API Error" in result.explanation
+        )
         assert result.confidence == 0.0
 
     def test_generate_sql_includes_table_information(
@@ -151,7 +167,11 @@ class TestOpenAIService:
         # Setup mock response
         mock_response = Mock()
         mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = '{"sql": "SELECT * FROM users", "explanation": "test", "confidence": 85}'
+        mock_response.choices[
+            0
+        ].message.content = (
+            '{"sql": "SELECT * FROM users", "explanation": "test", "confidence": 85}'
+        )
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         # Execute
@@ -160,7 +180,7 @@ class TestOpenAIService:
         # Assert
         call_args = mock_openai_client.chat.completions.create.call_args
         prompt_content = call_args[1]["messages"][1]["content"]
-        
+
         # Check that table information is included in the prompt
         assert "Table: users" in prompt_content
         assert "Table: products" in prompt_content
@@ -198,34 +218,37 @@ class TestOpenAIService:
         # Setup mock response with corrected JSON
         mock_response = Mock()
         mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = '''
+        mock_response.choices[0].message.content = """
         {
             "sql": "SELECT id, name FROM users",
             "explanation": "The error was caused by referencing non-existent column 'email'. I fixed it by selecting only existing columns.",
             "confidence": 88
         }
-        '''
+        """
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         # Execute
         result = openai_service.generate_sql_with_error_feedback(
-            "Show user info", 
-            sample_tables, 
-            "SELECT id, email FROM users", 
-            "Column 'email' doesn't exist"
+            "Show user info",
+            sample_tables,
+            "SELECT id, email FROM users",
+            "Column 'email' doesn't exist",
         )
 
         # Assert
         assert isinstance(result, SQLQuery)
         assert result.natural_language == "Show user info"
         assert result.sql == "SELECT id, name FROM users"
-        assert "non-existent column" in result.explanation
+        assert (
+            result.explanation is not None
+            and "non-existent column" in result.explanation
+        )
         assert result.confidence == 0.88
 
         # Verify call was made with correct parameters
         call_args = mock_openai_client.chat.completions.create.call_args
         assert call_args[1]["model"] == "gpt-3.5-turbo"
-        
+
         # Check that error feedback is included in prompt
         prompt_content = call_args[1]["messages"][1]["content"]
         assert "PREVIOUS SQL QUERY (FAILED)" in prompt_content
@@ -241,15 +264,17 @@ class TestOpenAIService:
         # Setup mock response with invalid JSON
         mock_response = Mock()
         mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = "SELECT id, name FROM users"  # Not JSON
+        mock_response.choices[
+            0
+        ].message.content = "SELECT id, name FROM users"  # Not JSON
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         # Execute
         result = openai_service.generate_sql_with_error_feedback(
-            "Show users", 
-            sample_tables, 
-            "SELECT * FROM invalid_table", 
-            "Table doesn't exist"
+            "Show users",
+            sample_tables,
+            "SELECT * FROM invalid_table",
+            "Table doesn't exist",
         )
 
         # Assert
@@ -270,15 +295,18 @@ class TestOpenAIService:
 
         # Execute
         result = openai_service.generate_sql_with_error_feedback(
-            "Show users", 
-            sample_tables, 
-            "SELECT * FROM users", 
-            "Syntax error"
+            "Show users", sample_tables, "SELECT * FROM users", "Syntax error"
         )
 
         # Assert
         assert isinstance(result, SQLQuery)
         assert result.natural_language == "Show users"
-        assert "-- Error generating corrected SQL: API Error" in result.sql
-        assert "Failed to generate corrected SQL: API Error" in result.explanation
+        assert (
+            result.sql is not None
+            and "-- Error generating corrected SQL: API Error" in result.sql
+        )
+        assert (
+            result.explanation is not None
+            and "Failed to generate corrected SQL: API Error" in result.explanation
+        )
         assert result.confidence == 0.0
