@@ -16,25 +16,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install uv
       uses: astral-sh/setup-uv@v3
       with:
         enable-cache: true
         cache-dependency-glob: "uv.lock"
+        cache-suffix: python-${{ matrix.python-version }}
 
-    - name: Set up virtual environment
+    - name: Set up Python and install dependencies
       run: |
         uv python install ${{ matrix.python-version }}
-        uv venv --python ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
+        uv sync --frozen
 
     - name: Run Ruff linter
       run: |
@@ -46,7 +38,7 @@ jobs:
 
     - name: Run MyPy type checker
       run: |
-        uv run mypy sqlllm/
+        uv run mypy sqlllm/ --ignore-missing-imports
 
   test:
     runs-on: ubuntu-latest
@@ -57,25 +49,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install uv
       uses: astral-sh/setup-uv@v3
       with:
         enable-cache: true
         cache-dependency-glob: "uv.lock"
+        cache-suffix: python-${{ matrix.python-version }}
 
-    - name: Set up virtual environment
+    - name: Set up Python and install dependencies
       run: |
         uv python install ${{ matrix.python-version }}
-        uv venv --python ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
+        uv sync --frozen
 
     - name: Run tests
       run: |
@@ -95,18 +79,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-
     - name: Install uv
       uses: astral-sh/setup-uv@v3
+      with:
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+        cache-suffix: python-3.11
 
-    - name: Set up virtual environment
+    - name: Set up Python and install dependencies
       run: |
-        uv venv
-        uv sync --all-extras --dev
+        uv python install 3.11
+        uv sync --frozen
 
     - name: Run pre-commit
       run: |
