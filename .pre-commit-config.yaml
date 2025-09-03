@@ -25,4 +25,16 @@ repos:
         additional_dependencies:
           - types-requests
           - types-aiofiles
-        args: [--ignore-missing-imports, --namespace-packages, --explicit-package-bases]
+          - types-psutil
+          - pytest
+          - python-dotenv
+          - openai
+          - click
+          - rich
+          - pydantic
+          - psycopg2-binary
+          - pymysql
+          - aiofiles
+          - psutil
+          - markdown
+          - sqlparse
