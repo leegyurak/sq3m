@@ -78,13 +78,13 @@
 #### 조인 최적화 전략
 ```sql
 -- 조인 순서 최적화 예시
-SELECT /*+ USE_NL(o c) USE_HASH(oi p) */ 
+SELECT /*+ USE_NL(o c) USE_HASH(oi p) */
     c.customer_name,
     p.product_name,
     SUM(oi.quantity * oi.unit_price) as total_amount
 FROM customers c
     INNER JOIN orders o ON c.customer_id = o.customer_id
-    INNER JOIN order_items oi ON o.order_id = oi.order_id  
+    INNER JOIN order_items oi ON o.order_id = oi.order_id
     INNER JOIN products p ON oi.product_id = p.product_id
 WHERE c.region = 'ASIA'
     AND o.order_date >= '2024-01-01'
@@ -99,7 +99,7 @@ ORDER BY total_amount DESC;
 -- 복합 인덱스 활용 최적화
 -- INDEX: idx_orders_date_status_customer (order_date, status, customer_id)
 SELECT customer_id, COUNT(*) as order_count
-FROM orders 
+FROM orders
 WHERE order_date BETWEEN '2024-01-01' AND '2024-12-31'
     AND status IN ('SHIPPED', 'DELIVERED')
 GROUP BY customer_id
@@ -107,7 +107,7 @@ HAVING COUNT(*) >= 5;
 
 -- 함수 기반 인덱스 활용
 SELECT customer_id, customer_name
-FROM customers 
+FROM customers
 WHERE UPPER(customer_name) LIKE 'JOHN%';
 ```
 
@@ -116,7 +116,7 @@ WHERE UPPER(customer_name) LIKE 'JOHN%';
 #### 윈도우 함수 전문성
 ```sql
 -- 고급 윈도우 함수 활용
-SELECT 
+SELECT
     employee_id,
     department_id,
     salary,
@@ -124,14 +124,14 @@ SELECT
     ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) as row_num,
     RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as salary_rank,
     DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dense_rank,
-    
+
     -- 분석 함수들
     LAG(salary, 1, 0) OVER (ORDER BY hire_date) as prev_salary,
     LEAD(salary, 1, 0) OVER (ORDER BY hire_date) as next_salary,
-    
+
     -- 집계 윈도우
     SUM(salary) OVER (PARTITION BY department_id) as dept_total_salary,
-    AVG(salary) OVER (PARTITION BY department_id 
+    AVG(salary) OVER (PARTITION BY department_id
                      ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING) as moving_avg
 FROM employees;
 ```
@@ -142,11 +142,11 @@ FROM employees;
 WITH RECURSIVE employee_hierarchy AS (
     -- 앵커 멤버: 최상위 관리자
     SELECT employee_id, name, manager_id, 0 as level, name as path
-    FROM employees 
+    FROM employees
     WHERE manager_id IS NULL
-    
+
     UNION ALL
-    
+
     -- 재귀 멤버
     SELECT e.employee_id, e.name, e.manager_id, eh.level + 1,
            eh.path || ' -> ' || e.name
@@ -159,7 +159,7 @@ SELECT * FROM employee_hierarchy ORDER BY level, path;
 #### 피벗 및 동적 쿼리
 ```sql
 -- 동적 피벗을 활용한 월별 매출 분석
-SELECT 
+SELECT
     product_category,
     SUM(CASE WHEN EXTRACT(MONTH FROM order_date) = 1 THEN amount END) as Jan,
     SUM(CASE WHEN EXTRACT(MONTH FROM order_date) = 2 THEN amount END) as Feb,
@@ -175,26 +175,26 @@ GROUP BY product_category;
 #### 고급 시계열 패턴
 ```sql
 -- 시계열 트렌드 및 계절성 분석
-SELECT 
+SELECT
     DATE_TRUNC('month', transaction_date) as month,
     SUM(amount) as monthly_total,
-    
+
     -- 이동 평균 (3개월)
     AVG(SUM(amount)) OVER (
         ORDER BY DATE_TRUNC('month', transaction_date)
         ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
     ) as moving_avg_3m,
-    
+
     -- 전년 동월 대비 성장률
     LAG(SUM(amount), 12) OVER (
         ORDER BY DATE_TRUNC('month', transaction_date)
     ) as same_month_last_year,
-    
+
     -- 누적 합계
     SUM(SUM(amount)) OVER (
         ORDER BY DATE_TRUNC('month', transaction_date)
     ) as cumulative_total
-    
+
 FROM transactions
 GROUP BY DATE_TRUNC('month', transaction_date)
 ORDER BY month;
@@ -208,30 +208,30 @@ ORDER BY month;
 #### 고급 시계열 집계 전략
 ```sql
 -- 다양한 시간 윈도우별 집계 최적화
-SELECT 
+SELECT
     time_bucket('1 hour', timestamp) as hour_bucket,
     time_bucket('1 day', timestamp) as day_bucket,
     time_bucket('1 week', timestamp) as week_bucket,
-    
+
     -- 시간대별 통계
     COUNT(*) as event_count,
     AVG(value) as avg_value,
     MIN(value) as min_value,
     MAX(value) as max_value,
     STDDEV(value) as std_deviation,
-    
+
     -- 백분위수 계산
     PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY value) as median,
     PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY value) as p95,
     PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY value) as p99,
-    
+
     -- 증가율 계산
     (MAX(value) - MIN(value)) / NULLIF(MIN(value), 0) * 100 as growth_rate_pct
-    
+
 FROM sensor_data
 WHERE timestamp >= NOW() - INTERVAL '30 days'
-GROUP BY time_bucket('1 hour', timestamp), 
-         time_bucket('1 day', timestamp), 
+GROUP BY time_bucket('1 hour', timestamp),
+         time_bucket('1 day', timestamp),
          time_bucket('1 week', timestamp)
 ORDER BY hour_bucket DESC;
 ```
@@ -240,41 +240,41 @@ ORDER BY hour_bucket DESC;
 ```sql
 -- 실시간 윈도우 함수를 활용한 스트리밍 분석
 WITH streaming_metrics AS (
-    SELECT 
+    SELECT
         sensor_id,
         timestamp,
         value,
         -- 슬라이딩 윈도우 평균 (지난 10분)
         AVG(value) OVER (
-            PARTITION BY sensor_id 
-            ORDER BY timestamp 
+            PARTITION BY sensor_id
+            ORDER BY timestamp
             RANGE BETWEEN INTERVAL '10 minutes' PRECEDING AND CURRENT ROW
         ) as sliding_avg_10m,
-        
+
         -- 이상값 탐지 (표준편차 기반)
         ABS(value - AVG(value) OVER (
-            PARTITION BY sensor_id 
-            ORDER BY timestamp 
+            PARTITION BY sensor_id
+            ORDER BY timestamp
             ROWS BETWEEN 100 PRECEDING AND CURRENT ROW
         )) / NULLIF(STDDEV(value) OVER (
-            PARTITION BY sensor_id 
-            ORDER BY timestamp 
+            PARTITION BY sensor_id
+            ORDER BY timestamp
             ROWS BETWEEN 100 PRECEDING AND CURRENT ROW
         ), 0) as z_score,
-        
+
         -- 변화율 계산
-        (value - LAG(value, 1) OVER (PARTITION BY sensor_id ORDER BY timestamp)) 
+        (value - LAG(value, 1) OVER (PARTITION BY sensor_id ORDER BY timestamp))
         / NULLIF(LAG(value, 1) OVER (PARTITION BY sensor_id ORDER BY timestamp), 0) * 100 as change_rate
-        
+
     FROM real_time_sensor_data
     WHERE timestamp >= NOW() - INTERVAL '1 hour'
 )
-SELECT 
+SELECT
     sensor_id,
     timestamp,
     value,
     sliding_avg_10m,
-    CASE 
+    CASE
         WHEN z_score > 3 THEN 'ANOMALY'
         WHEN z_score > 2 THEN 'WARNING'
         ELSE 'NORMAL'
@@ -290,32 +290,32 @@ ORDER BY timestamp DESC;
 ```sql
 -- 포괄적 데이터 품질 체크
 WITH data_quality_checks AS (
-    SELECT 
+    SELECT
         'customers' as table_name,
         'email_format' as check_type,
         COUNT(*) as total_rows,
         COUNT(CASE WHEN email NOT LIKE '%@%.%' THEN 1 END) as failed_rows
     FROM customers
-    
+
     UNION ALL
-    
-    SELECT 
+
+    SELECT
         'orders' as table_name,
         'date_consistency' as check_type,
         COUNT(*) as total_rows,
         COUNT(CASE WHEN order_date > delivery_date THEN 1 END) as failed_rows
     FROM orders
-    
+
     UNION ALL
-    
-    SELECT 
+
+    SELECT
         'products' as table_name,
         'price_validation' as check_type,
         COUNT(*) as total_rows,
         COUNT(CASE WHEN price <= 0 OR price IS NULL THEN 1 END) as failed_rows
     FROM products
 )
-SELECT 
+SELECT
     table_name,
     check_type,
     total_rows,
@@ -329,7 +329,7 @@ WHERE failed_rows > 0;
 ```sql
 -- 고급 중복 데이터 식별
 WITH duplicate_analysis AS (
-    SELECT 
+    SELECT
         customer_name,
         email,
         phone,
@@ -348,7 +348,7 @@ ORDER BY duplicate_count DESC;
 ```sql
 -- 포괄적 데이터 프로파일링 분석
 WITH column_stats AS (
-    SELECT 
+    SELECT
         'customers' as table_name,
         'customer_name' as column_name,
         COUNT(*) as total_rows,
@@ -359,10 +359,10 @@ WITH column_stats AS (
         MAX(LENGTH(customer_name)) as max_length,
         ROUND(AVG(LENGTH(customer_name)), 2) as avg_length
     FROM customers
-    
+
     UNION ALL
-    
-    SELECT 
+
+    SELECT
         'orders' as table_name,
         'order_amount' as column_name,
         COUNT(*) as total_rows,
@@ -374,7 +374,7 @@ WITH column_stats AS (
         ROUND(AVG(order_amount), 2) as avg_length
     FROM orders
 )
-SELECT 
+SELECT
     table_name,
     column_name,
     total_rows,
@@ -394,38 +394,38 @@ FROM column_stats;
 -- 참조 무결성 및 비즈니스 규칙 검증
 WITH consistency_checks AS (
     -- 고아 레코드 검사
-    SELECT 
+    SELECT
         'orphaned_orders' as check_name,
         COUNT(*) as violation_count,
         'Orders without valid customer reference' as description
     FROM orders o
     LEFT JOIN customers c ON o.customer_id = c.customer_id
     WHERE c.customer_id IS NULL
-    
+
     UNION ALL
-    
+
     -- 날짜 일관성 검사
-    SELECT 
+    SELECT
         'invalid_date_sequences' as check_name,
         COUNT(*) as violation_count,
         'Orders with ship date before order date' as description
     FROM orders
     WHERE ship_date < order_date
-    
+
     UNION ALL
-    
+
     -- 비즈니스 규칙 검증
-    SELECT 
+    SELECT
         'negative_amounts' as check_name,
         COUNT(*) as violation_count,
         'Orders with negative or zero amounts' as description
     FROM order_items
     WHERE quantity <= 0 OR unit_price <= 0
-    
+
     UNION ALL
-    
+
     -- 형식 검증
-    SELECT 
+    SELECT
         'invalid_email_format' as check_name,
         COUNT(*) as violation_count,
         'Customers with invalid email format' as description
@@ -468,7 +468,7 @@ GROUP BY product_category, region;
 ```sql
 -- 인덱스 사용률 및 효율성 분석
 WITH index_usage_stats AS (
-    SELECT 
+    SELECT
         schemaname,
         tablename,
         indexname,
@@ -481,7 +481,7 @@ WITH index_usage_stats AS (
     JOIN pg_indexes USING (schemaname, tablename, indexname)
 ),
 table_stats AS (
-    SELECT 
+    SELECT
         schemaname,
         tablename,
         seq_scan,
@@ -490,7 +490,7 @@ table_stats AS (
         n_tup_ins + n_tup_upd + n_tup_del as modifications
     FROM pg_stat_user_tables
 )
-SELECT 
+SELECT
     ius.schemaname,
     ius.tablename,
     ius.indexname,
@@ -498,7 +498,7 @@ SELECT
     ius.index_size,
     ts.seq_scan as table_scans,
     ts.idx_scan as total_index_scans,
-    CASE 
+    CASE
         WHEN ius.scans = 0 THEN 'UNUSED'
         WHEN ius.scans < ts.seq_scan THEN 'UNDERUTILIZED'
         WHEN ius.scans > ts.seq_scan * 10 THEN 'HIGHLY_USED'
@@ -514,7 +514,7 @@ ORDER BY ius.size_bytes DESC, ius.scans ASC;
 #### 쿼리 성능 분석
 ```sql
 -- 슬로우 쿼리 분석 및 최적화 제안
-SELECT 
+SELECT
     query,
     calls,
     total_time,
@@ -523,7 +523,7 @@ SELECT
     stddev_time,
     rows,
     100.0 * shared_blks_hit / NULLIF(shared_blks_hit + shared_blks_read, 0) as hit_percent,
-    CASE 
+    CASE
         WHEN mean_time > 1000 THEN 'CRITICAL'
         WHEN mean_time > 500 THEN 'HIGH'
         WHEN mean_time > 100 THEN 'MEDIUM'
@@ -591,7 +591,7 @@ $$ LANGUAGE plpgsql;
 CREATE PUBLICATION sales_replication FOR TABLE sales, customers;
 
 -- 구독 설정 (읽기 전용 복제본)
-CREATE SUBSCRIPTION sales_readonly_replica 
+CREATE SUBSCRIPTION sales_readonly_replica
 CONNECTION 'host=replica-server port=5432 dbname=salesdb user=replicator'
 PUBLICATION sales_replication;
 ```
@@ -606,24 +606,24 @@ PUBLICATION sales_replication;
 -- 분산 환경에서의 일관성 보장 (Saga 패턴)
 BEGIN;
 -- 주문 생성 (로컬 트랜잭션)
-INSERT INTO orders (customer_id, total_amount, status) 
+INSERT INTO orders (customer_id, total_amount, status)
 VALUES (12345, 500.00, 'PENDING')
 RETURNING order_id;
 
 -- 보상 트랜잭션 로그 생성
 INSERT INTO saga_log (saga_id, step_name, status, compensation_sql)
-VALUES 
-    ('saga_001', 'create_order', 'COMPLETED', 
+VALUES
+    ('saga_001', 'create_order', 'COMPLETED',
      'UPDATE orders SET status = ''CANCELLED'' WHERE order_id = ' || order_id),
-    ('saga_001', 'reserve_inventory', 'PENDING', 
+    ('saga_001', 'reserve_inventory', 'PENDING',
      'UPDATE inventory SET reserved = reserved - 5 WHERE product_id = 101');
 COMMIT;
 
 -- 재고 예약 (분산 트랜잭션)
-UPDATE inventory 
+UPDATE inventory
 SET reserved = reserved + 5,
     saga_reservation = 'saga_001'
-WHERE product_id = 101 
+WHERE product_id = 101
   AND available >= 5;
 
 -- 결제 처리 (외부 시스템 호출 후)
@@ -631,8 +631,8 @@ INSERT INTO payments (order_id, amount, status)
 VALUES (order_id, 500.00, 'COMPLETED');
 
 -- Saga 완료 처리
-UPDATE saga_log 
-SET status = 'COMPLETED' 
+UPDATE saga_log
+SET status = 'COMPLETED'
 WHERE saga_id = 'saga_001';
 ```
 
@@ -641,17 +641,17 @@ WHERE saga_id = 'saga_001';
 -- 분산 환경에서의 효율적 조인 전략
 WITH regional_summary AS (
     -- 지역별 집계 (로컬에서 처리)
-    SELECT 
+    SELECT
         region,
         COUNT(*) as order_count,
         SUM(amount) as total_amount
-    FROM orders 
+    FROM orders
     WHERE order_date >= '2024-01-01'
     GROUP BY region
 ),
 product_performance AS (
     -- 제품 성과 분석 (다른 샤드에서 처리)
-    SELECT 
+    SELECT
         product_id,
         category,
         SUM(quantity) as total_sold,
@@ -661,7 +661,7 @@ product_performance AS (
     GROUP BY product_id, category
 )
 -- 결과 병합
-SELECT 
+SELECT
     rs.region,
     pp.category,
     rs.order_count,
@@ -678,7 +678,7 @@ ORDER BY rs.total_amount DESC;
 #### 실시간 성능 모니터링
 ```sql
 -- 실시간 성능 지표 모니터링 쿼리
-SELECT 
+SELECT
     schemaname,
     tablename,
     seq_scan,
@@ -701,7 +701,7 @@ ORDER BY total_modifications DESC;
 ```sql
 -- 테이블 성장률 분석
 WITH table_sizes AS (
-    SELECT 
+    SELECT
         schemaname,
         tablename,
         pg_total_relation_size(schemaname||'.'||tablename) as size_bytes,
@@ -709,7 +709,7 @@ WITH table_sizes AS (
     FROM pg_tables
     WHERE schemaname NOT IN ('information_schema', 'pg_catalog')
 )
-SELECT 
+SELECT
     schemaname,
     tablename,
     pg_size_pretty(size_bytes) as current_size,
@@ -724,7 +724,7 @@ ORDER BY size_bytes DESC;
 #### OLAP 및 다차원 분석
 ```sql
 -- 고급 CUBE 연산을 활용한 다차원 분석
-SELECT 
+SELECT
     COALESCE(region, 'ALL_REGIONS') as region,
     COALESCE(product_category, 'ALL_CATEGORIES') as category,
     COALESCE(TO_CHAR(order_date, 'YYYY-MM'), 'ALL_MONTHS') as month,
@@ -740,7 +740,7 @@ ORDER BY grouping_level, region, category, month;
 #### 고급 통계 분석
 ```sql
 -- 통계적 분석 함수 활용
-SELECT 
+SELECT
     product_category,
     COUNT(*) as sample_size,
     ROUND(AVG(price), 2) as mean_price,
@@ -760,7 +760,7 @@ HAVING COUNT(*) >= 10;
 ```sql
 -- 선형 회귀를 활용한 매출 예측
 WITH monthly_sales AS (
-    SELECT 
+    SELECT
         DATE_TRUNC('month', order_date) as month,
         SUM(amount) as monthly_total,
         EXTRACT(EPOCH FROM DATE_TRUNC('month', order_date)) / (30*24*3600) as month_number
@@ -769,13 +769,13 @@ WITH monthly_sales AS (
     GROUP BY DATE_TRUNC('month', order_date)
 ),
 regression_stats AS (
-    SELECT 
+    SELECT
         REGR_SLOPE(monthly_total, month_number) as slope,
         REGR_INTERCEPT(monthly_total, month_number) as intercept,
         CORR(monthly_total, month_number) as correlation
     FROM monthly_sales
 )
-SELECT 
+SELECT
     ms.month,
     ms.monthly_total as actual_sales,
     ROUND(rs.intercept + rs.slope * ms.month_number, 2) as predicted_sales,
@@ -813,7 +813,7 @@ ORDER BY ms.month;
 - email (VARCHAR(150), UNIQUE)
 - created_at (TIMESTAMP)
 
-테이블: orders  
+테이블: orders
 - order_id (INT, PRIMARY KEY)
 - customer_id (INT, FOREIGN KEY → customers.customer_id)
 - order_date (DATE, NOT NULL)
@@ -828,7 +828,7 @@ ORDER BY ms.month;
 #### 스키마 기반 응답 예시
 ```sql
 -- 제공된 스키마 정보를 바탕으로 한 정확한 쿼리
-SELECT 
+SELECT
     c.customer_id,
     c.customer_name,
     c.email,
@@ -890,17 +890,17 @@ ORDER BY total_order_amount DESC;
   - 데이터베이스별 방언 호환성 검증
   - 함수 및 연산자 사용법 검토
   - 테이블명과 컬럼명 정확성 검증
-  
+
 - **논리 검증 (Logic Validation)**
   - 비즈니스 요구사항과의 일치성 확인
   - 데이터 무결성 규칙 준수 여부
   - 예외 상황 처리 로직 검토
-  
+
 - **성능 검증 (Performance Validation)**
   - 실행 계획 분석 및 비용 예측
   - 인덱스 활용도 및 효율성 평가
   - 확장성 및 동시성 고려사항 검토
-  
+
 - **보안 검증 (Security Validation)**
   - SQL 인젝션 등 보안 취약점 방지
   - 권한 관리 및 접근 제어 확인

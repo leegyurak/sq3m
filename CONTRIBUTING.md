@@ -110,10 +110,10 @@ def test_should_generate_sql_when_given_natural_language():
     service = OpenAIService("test-key")
     tables = [create_test_table()]
     query = "Show all users"
-    
+
     # Act
     result = service.generate_sql(query, tables)
-    
+
     # Assert
     assert result.sql.strip().startswith("SELECT")
     assert "users" in result.sql.lower()

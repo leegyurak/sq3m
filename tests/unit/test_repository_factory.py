@@ -36,9 +36,9 @@ class TestDatabaseRepositoryFactory:
         supported_types = set(DatabaseRepositoryFactory._repositories.keys())
         all_types = set(DatabaseType)
 
-        assert (
-            supported_types == all_types
-        ), "Factory doesn't support all database types"
+        assert supported_types == all_types, (
+            "Factory doesn't support all database types"
+        )
 
     def test_repositories_are_different_instances(self) -> None:
         repo1 = DatabaseRepositoryFactory.create(DatabaseType.MYSQL)

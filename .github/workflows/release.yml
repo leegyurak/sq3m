@@ -34,7 +34,7 @@ jobs:
     - name: Build package
       run: |
         uv build
-        
+
     - name: Verify package contents
       run: |
         ls -la dist/
@@ -72,7 +72,7 @@ jobs:
         if [ -z "$PREV_TAG" ]; then
           PREV_TAG=$(git rev-list --max-parents=0 HEAD)
         fi
-        
+
         # Generate changelog
         echo "## 🚀 What's Changed" > CHANGELOG.md
         echo "" >> CHANGELOG.md

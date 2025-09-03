@@ -117,15 +117,18 @@ class TestPromptLoader:
         mock_detector = Mock()
         mock_detector.config_dir = temp_dirs["config"]
 
-        with patch.dict(
-            os.environ,
-            {
-                "SYSTEM_PROMPT_PATH": str(env_path_file),
-                "SYSTEM_PROMPT_FILE": "env_file.txt",
-            },
-        ), patch(
-            "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
-            return_value=mock_detector,
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SYSTEM_PROMPT_PATH": str(env_path_file),
+                    "SYSTEM_PROMPT_FILE": "env_file.txt",
+                },
+            ),
+            patch(
+                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                return_value=mock_detector,
+            ),
         ):
             # Custom path should override environment variables
             prompt = prompt_loader.load_system_prompt(str(custom_file))
@@ -144,15 +147,18 @@ class TestPromptLoader:
         mock_detector = Mock()
         mock_detector.config_dir = temp_dirs["config"]
 
-        with patch.dict(
-            os.environ,
-            {
-                "SYSTEM_PROMPT_PATH": str(env_path_file),
-                "SYSTEM_PROMPT_FILE": "env_file.txt",
-            },
-        ), patch(
-            "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
-            return_value=mock_detector,
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SYSTEM_PROMPT_PATH": str(env_path_file),
+                    "SYSTEM_PROMPT_FILE": "env_file.txt",
+                },
+            ),
+            patch(
+                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                return_value=mock_detector,
+            ),
         ):
             prompt = prompt_loader.load_system_prompt()
             assert prompt == "env path content"
@@ -243,15 +249,18 @@ class TestPromptLoader:
         mock_detector = Mock()
         mock_detector.config_dir = temp_dirs["config"]
 
-        with patch.dict(
-            os.environ,
-            {
-                "SYSTEM_PROMPT_PATH": str(env_path_file),
-                "SYSTEM_PROMPT_FILE": "env_file.txt",
-            },
-        ), patch(
-            "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
-            return_value=mock_detector,
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SYSTEM_PROMPT_PATH": str(env_path_file),
+                    "SYSTEM_PROMPT_FILE": "env_file.txt",
+                },
+            ),
+            patch(
+                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                return_value=mock_detector,
+            ),
         ):
             info = prompt_loader.get_available_prompts()
 

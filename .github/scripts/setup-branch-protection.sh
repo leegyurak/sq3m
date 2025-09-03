@@ -18,7 +18,7 @@ gh api \
     "strict": true,
     "contexts": [
       "CI / test (3.10)",
-      "CI / test (3.11)", 
+      "CI / test (3.11)",
       "CI / test (3.12)",
       "Code Quality / security-scan",
       "Code Quality / complexity-analysis"

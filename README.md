@@ -61,7 +61,7 @@ export LANGUAGE=en  # en (English) or ko (Korean), defaults to en
 
 SQLLLM supports multiple system prompt languages through the `LANGUAGE` environment variable:
 
-- **Supported Languages**: 
+- **Supported Languages**:
   - `en`: English (default)
   - `ko`: Korean
 
@@ -93,7 +93,7 @@ sqlllm
 The tool will guide you through:
 
 1. **🤖 LLM Setup**: Configure OpenAI API key (if not in environment)
-2. **🗄️ Database Connection**: Set up database connection (interactive if not in environment)  
+2. **🗄️ Database Connection**: Set up database connection (interactive if not in environment)
 3. **📊 Schema Analysis**: Automatically analyze all tables and infer their purposes
 4. **💬 Interactive Queries**: Ask questions in natural language
 

@@ -27,7 +27,7 @@ jobs:
       run: |
         # Update uv itself
         uv self update
-        
+
         # Update Python dependencies
         uv lock --upgrade
 
@@ -47,18 +47,18 @@ jobs:
         title: "🔄 Automated Dependency Update"
         body: |
           ## 🔄 Automated Dependency Update
-          
+
           This PR updates project dependencies to their latest versions.
-          
+
           ### Changes
           - Updated `uv.lock` with latest compatible versions
           - All tests and type checks pass ✅
-          
+
           ### Review Notes
           - Please review the changes in `uv.lock`
           - Check if any breaking changes are mentioned in changelogs
           - Verify that CI passes before merging
-          
+
           ---
           *This PR was created automatically by the dependency update workflow.*
         branch: automated-dependency-update
