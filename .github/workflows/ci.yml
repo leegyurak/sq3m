@@ -27,6 +27,7 @@ jobs:
       run: |
         uv python install ${{ matrix.python-version }}
         uv sync --frozen --all-groups
+        uv pip install -e .
 
     - name: Run Ruff linter
       run: |
@@ -38,7 +39,7 @@ jobs:
 
     - name: Run MyPy type checker
       run: |
-        PYTHONPATH=. uv run mypy
+        uv run mypy --install-types --non-interactive
 
   test:
     runs-on: ubuntu-latest

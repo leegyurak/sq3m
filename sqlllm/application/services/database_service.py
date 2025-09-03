@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from sqlllm.infrastructure.history.markdown_history import MarkdownHistory
+
 from ...infrastructure.database.repository_factory import DatabaseRepositoryFactory
-from ...infrastructure.history.markdown_history import MarkdownHistory
 from ..use_cases.database_analyzer import DatabaseAnalyzer
 from ..use_cases.sql_generator import SQLGenerator
 

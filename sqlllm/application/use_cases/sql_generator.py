@@ -3,8 +3,9 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any
 
+from sqlllm.infrastructure.history.markdown_history import MarkdownHistory
+
 from ...domain.entities.database import SQLQuery, Table
-from ...infrastructure.history.markdown_history import MarkdownHistory
 
 if TYPE_CHECKING:
     from ...domain.interfaces.database_repository import DatabaseRepository
