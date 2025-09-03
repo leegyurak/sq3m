@@ -61,6 +61,7 @@ jobs:
       run: |
         uv python install ${{ matrix.python-version }}
         uv sync --frozen --all-groups
+        uv pip install -e .
 
     - name: Run tests
       run: |
@@ -91,6 +92,7 @@ jobs:
       run: |
         uv python install 3.11
         uv sync --frozen --all-groups
+        uv pip install -e .
 
     - name: Run pre-commit
       run: |
