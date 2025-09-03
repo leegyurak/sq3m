@@ -36,17 +36,6 @@ dependencies = [
     "aiofiles>=24.1.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.21.0",
-    "ruff==0.12.11",
-    "pre-commit>=3.0.0",
-    "mypy==1.17.1",
-    "types-requests>=2.31.0",
-    "psutil>=5.9.0",
-]
 
 [project.scripts]
 sqlllm = "sqlllm.main:main"
@@ -179,7 +168,12 @@ exclude_lines = [
 [dependency-groups]
 dev = [
     "pytest>=8.4.1",
+    "pytest-cov>=6.0.0",
     "pytest-asyncio>=1.1.0",
+    "ruff==0.12.11",
+    "pre-commit>=3.0.0",
+    "mypy==1.17.1",
+    "types-requests>=2.31.0",
     "types-aiofiles>=24.1.0.20250822",
     "types-psutil>=7.0.0.20250822",
 ]
