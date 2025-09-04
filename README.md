@@ -82,34 +82,149 @@ sq3m
 echo "LANGUAGE=ko" >> .env
 ```
 
-## 🔧 Usage
+## 🔧 How to Use
 
-Run the CLI tool:
+### Quick Start
+
+1. **Install sq3m**:
+   ```bash
+   pip install sq3m
+   ```
+
+2. **Set up your OpenAI API key**:
+   ```bash
+   export OPENAI_API_KEY=your_openai_api_key
+   ```
+
+3. **Run the tool**:
+   ```bash
+   sq3m
+   ```
+
+### Step-by-Step Usage
+
+When you run `sq3m`, the tool will guide you through an interactive setup:
+
+#### 1. 🤖 **LLM Configuration**
+- If `OPENAI_API_KEY` is not set, you'll be prompted to enter it
+- Optionally configure the model (defaults to `gpt-3.5-turbo`)
+
+#### 2. 🗄️ **Database Connection**
+The tool will ask for your database details:
+- **Database Type**: Choose between MySQL, PostgreSQL, or SQLite
+- **Host**: Database server address (e.g., `localhost`)
+- **Port**: Database port (e.g., `3306` for MySQL, `5432` for PostgreSQL)
+- **Database Name**: Your database name
+- **Username & Password**: Your database credentials
+
+**Pro Tip**: Set these as environment variables to skip the interactive setup:
+```bash
+export DB_TYPE=mysql
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_NAME=your_database
+export DB_USERNAME=your_username
+export DB_PASSWORD=your_password
+```
+
+#### 3. 📊 **Schema Analysis**
+- sq3m automatically analyzes all tables in your database
+- Uses AI to infer the purpose of each table
+- Creates a comprehensive understanding of your database structure
+
+#### 4. 💬 **Interactive Query Mode**
+Now you can ask questions in natural language!
+
+### 💡 Example Conversations
+
+```
+🤖 sq3m > Show me all users
+Generated SQL:
+SELECT * FROM users;
+
+Results:
+┌────┬──────────┬─────────────────────┬────────────────────┐
+│ id │   name   │       email         │    created_at      │
+├────┼──────────┼─────────────────────┼────────────────────┤
+│ 1  │ John Doe │ john@example.com    │ 2024-01-15         │
+│ 2  │ Jane Doe │ jane@example.com    │ 2024-01-16         │
+└────┴──────────┴─────────────────────┴────────────────────┘
+
+🤖 sq3m > How many orders were placed this month?
+Generated SQL:
+SELECT COUNT(*) as order_count
+FROM orders
+WHERE MONTH(created_at) = MONTH(CURRENT_DATE())
+  AND YEAR(created_at) = YEAR(CURRENT_DATE());
+
+Results:
+┌─────────────┐
+│ order_count │
+├─────────────┤
+│     47      │
+└─────────────┘
+
+🤖 sq3m > What are the top 3 selling products?
+Generated SQL:
+SELECT p.name, SUM(oi.quantity) as total_sold
+FROM products p
+JOIN order_items oi ON p.id = oi.product_id
+GROUP BY p.id, p.name
+ORDER BY total_sold DESC
+LIMIT 3;
+
+Results: [showing results...]
+```
+
+### 🎯 Available Commands
+
+While in the interactive mode, you can use these special commands:
+
+| Command | Description |
+|---------|-------------|
+| `tables` | Show all database tables and their AI-inferred purposes |
+| `help` or `h` | Display available commands |
+| `quit`, `exit`, or `q` | Exit the application |
+
+### 🌍 Language Support
+
+sq3m supports multiple languages for system prompts:
 
 ```bash
+# Use Korean prompts
+export LANGUAGE=ko
+sq3m
+
+# Use English prompts (default)
+export LANGUAGE=en
 sq3m
 ```
 
-The tool will guide you through:
+### 🔧 Advanced Configuration
 
-1. **🤖 LLM Setup**: Configure OpenAI API key (if not in environment)
-2. **🗄️ Database Connection**: Set up database connection (interactive if not in environment)
-3. **📊 Schema Analysis**: Automatically analyze all tables and infer their purposes
-4. **💬 Interactive Queries**: Ask questions in natural language
+Create a `.env` file in your working directory:
 
-### 💡 Example Queries
+```bash
+# .env file
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4  # Use GPT-4 for better results
 
-- "Show all users"
-- "Find orders from last month"
-- "Count products by category"
-- "Show user details for user ID 123"
-- "What are the top 5 selling products?"
+DB_TYPE=postgresql
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=myapp_production
+DB_USERNAME=myuser
+DB_PASSWORD=mypassword
 
-### 🎯 CLI Commands
+LANGUAGE=ko  # Use Korean prompts
+```
 
-- `tables` - Show all database tables and their purposes
-- `help` or `h` - Show available commands
-- `quit`, `exit`, or `q` - Exit the application
+### 💡 Tips for Better Results
+
+1. **Be Specific**: "Show users created this week" vs "Show users"
+2. **Use Table Names**: If you know them, mention specific table names
+3. **Ask Follow-ups**: "Can you also show their email addresses?"
+4. **Use Business Terms**: "Show revenue by month" instead of "sum sales"
 
 ## 🏗️ Architecture
 

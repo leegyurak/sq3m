@@ -84,32 +84,147 @@ echo "LANGUAGE=ko" >> .env
 
 ## 🔧 사용법
 
-CLI 도구 실행:
+### 빠른 시작
+
+1. **sq3m 설치**:
+   ```bash
+   pip install sq3m
+   ```
+
+2. **OpenAI API 키 설정**:
+   ```bash
+   export OPENAI_API_KEY=your_openai_api_key
+   ```
+
+3. **도구 실행**:
+   ```bash
+   sq3m
+   ```
+
+### 단계별 사용법
+
+`sq3m`을 실행하면 대화형 설정 과정을 안내받습니다:
+
+#### 1. 🤖 **LLM 구성**
+- `OPENAI_API_KEY`가 설정되지 않은 경우 입력을 요청합니다
+- 모델 구성 옵션 (기본값: `gpt-3.5-turbo`)
+
+#### 2. 🗄️ **데이터베이스 연결**
+도구가 데이터베이스 정보를 요청합니다:
+- **데이터베이스 유형**: MySQL, PostgreSQL, SQLite 중 선택
+- **호스트**: 데이터베이스 서버 주소 (예: `localhost`)
+- **포트**: 데이터베이스 포트 (예: MySQL은 `3306`, PostgreSQL은 `5432`)
+- **데이터베이스 이름**: 사용할 데이터베이스명
+- **사용자명 및 비밀번호**: 데이터베이스 접속 정보
+
+**💡 팁**: 환경변수로 설정하면 대화형 설정을 건너뛸 수 있습니다:
+```bash
+export DB_TYPE=mysql
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_NAME=your_database
+export DB_USERNAME=your_username
+export DB_PASSWORD=your_password
+```
+
+#### 3. 📊 **스키마 분석**
+- sq3m이 데이터베이스의 모든 테이블을 자동으로 분석합니다
+- AI를 사용하여 각 테이블의 목적을 추론합니다
+- 데이터베이스 구조에 대한 종합적인 이해를 생성합니다
+
+#### 4. 💬 **대화형 쿼리 모드**
+이제 자연어로 질문할 수 있습니다!
+
+### 💡 대화 예시
+
+```
+🤖 sq3m > 모든 사용자를 보여줘
+생성된 SQL:
+SELECT * FROM users;
+
+결과:
+┌────┬──────────┬─────────────────────┬────────────────────┐
+│ id │   name   │       email         │    created_at      │
+├────┼──────────┼─────────────────────┼────────────────────┤
+│ 1  │ 홍길동   │ hong@example.com    │ 2024-01-15         │
+│ 2  │ 김철수   │ kim@example.com     │ 2024-01-16         │
+└────┴──────────┴─────────────────────┴────────────────────┘
+
+🤖 sq3m > 이번 달 주문이 몇 개야?
+생성된 SQL:
+SELECT COUNT(*) as order_count
+FROM orders
+WHERE MONTH(created_at) = MONTH(CURRENT_DATE())
+  AND YEAR(created_at) = YEAR(CURRENT_DATE());
+
+결과:
+┌─────────────┐
+│ order_count │
+├─────────────┤
+│     47      │
+└─────────────┘
+
+🤖 sq3m > 가장 많이 팔린 제품 3개는 뭐야?
+생성된 SQL:
+SELECT p.name, SUM(oi.quantity) as total_sold
+FROM products p
+JOIN order_items oi ON p.id = oi.product_id
+GROUP BY p.id, p.name
+ORDER BY total_sold DESC
+LIMIT 3;
+
+결과: [결과 표시...]
+```
+
+### 🎯 사용 가능한 명령어
+
+대화형 모드에서 다음 특수 명령어를 사용할 수 있습니다:
+
+| 명령어 | 설명 |
+|---------|-------------|
+| `tables` | 모든 데이터베이스 테이블과 AI가 추론한 목적을 표시 |
+| `help` 또는 `h` | 사용 가능한 명령어 표시 |
+| `quit`, `exit`, 또는 `q` | 애플리케이션 종료 |
+
+### 🌍 언어 지원
+
+sq3m은 시스템 프롬프트에 대해 다양한 언어를 지원합니다:
 
 ```bash
+# 한국어 프롬프트 사용
+export LANGUAGE=ko
+sq3m
+
+# 영어 프롬프트 사용 (기본값)
+export LANGUAGE=en
 sq3m
 ```
 
-도구는 다음 단계로 안내합니다:
+### 🔧 고급 구성
 
-1. **🤖 LLM 설정**: OpenAI API 키 구성 (환경에 없는 경우)
-2. **🗄️ 데이터베이스 연결**: 데이터베이스 연결 설정 (환경에 없는 경우 대화형)
-3. **📊 스키마 분석**: 모든 테이블을 자동으로 분석하고 목적 추론
-4. **💬 대화형 쿼리**: 자연어로 질문하기
+작업 디렉토리에 `.env` 파일을 생성하세요:
 
-### 💡 쿼리 예시
+```bash
+# .env 파일
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4  # 더 나은 결과를 위해 GPT-4 사용
 
-- "모든 사용자 보여줘"
-- "지난달 주문 찾기"
-- "카테고리별 제품 수 세기"
-- "사용자 ID 123의 사용자 세부정보 보여줘"
-- "가장 잘 팔리는 제품 5개는 뭐야?"
+DB_TYPE=postgresql
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=myapp_production
+DB_USERNAME=myuser
+DB_PASSWORD=mypassword
 
-### 🎯 CLI 명령어
+LANGUAGE=ko  # 한국어 프롬프트 사용
+```
 
-- `tables` - 모든 데이터베이스 테이블과 그 목적 표시
-- `help` 또는 `h` - 사용 가능한 명령어 표시
-- `quit`, `exit`, 또는 `q` - 애플리케이션 종료
+### 💡 더 나은 결과를 위한 팁
+
+1. **구체적으로 질문하기**: "사용자 보여줘" 보다는 "이번 주에 생성된 사용자 보여줘"
+2. **테이블 이름 사용하기**: 알고 있다면 특정 테이블 이름을 언급하세요
+3. **후속 질문하기**: "이메일 주소도 같이 보여줄 수 있어?"
+4. **비즈니스 용어 사용하기**: "sales 합계" 대신 "월별 매출"
 
 ## 🏗️ 아키텍처
 
