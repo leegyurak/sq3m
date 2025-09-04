@@ -9,6 +9,8 @@ on:
 jobs:
   quality-checks:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -31,23 +33,25 @@ jobs:
 
     - name: Run Ruff linter
       run: |
-        PYTHONPATH=. uv run ruff check . --output-format=github
+        uv run ruff check . --output-format=github
 
     - name: Run Ruff formatter check
       run: |
-        PYTHONPATH=. uv run ruff format --check .
+        uv run ruff format --check .
 
     - name: Run MyPy type checker
       run: |
-        PYTHONPATH=. uv run mypy
+        uv run mypy
 
     - name: Run security checks (Bandit)
       run: |
-        PYTHONPATH=. uv run bandit -r sqlllm/ -f json -o bandit-report.json || true
-        PYTHONPATH=. uv run bandit -r sqlllm/ || true
+        uv run bandit -r sqlllm/ -f json -o bandit-report.json || true
+        uv run bandit -r sqlllm/ || true
 
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -70,4 +74,4 @@ jobs:
 
     - name: Run pytest
       run: |
-        PYTHONPATH=. uv run pytest -v --cov=sqlllm --cov-report=term-missing
+        uv run pytest -v --cov=sqlllm --cov-report=term-missing
