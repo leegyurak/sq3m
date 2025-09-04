@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from sqlllm.domain.entities.database import DatabaseConnection, DatabaseType
-from sqlllm.infrastructure.database.mysql_repository import MySQLRepository
-from sqlllm.infrastructure.database.postgresql_repository import PostgreSQLRepository
+from sq3m.domain.entities.database import DatabaseConnection, DatabaseType
+from sq3m.infrastructure.database.mysql_repository import MySQLRepository
+from sq3m.infrastructure.database.postgresql_repository import PostgreSQLRepository
 
 
 @pytest.mark.integration

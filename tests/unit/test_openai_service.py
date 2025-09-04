@@ -4,8 +4,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from sqlllm.domain.entities.database import SQLQuery, Table
-from sqlllm.infrastructure.llm.openai_service import OpenAIService
+from sq3m.domain.entities.database import SQLQuery, Table
+from sq3m.infrastructure.llm.openai_service import OpenAIService
 
 
 class TestOpenAIService:
@@ -16,8 +16,8 @@ class TestOpenAIService:
     @pytest.fixture  # type: ignore[misc]
     def openai_service(self, mock_openai_client: Mock) -> OpenAIService:
         with (
-            patch("sqlllm.infrastructure.llm.openai_service.OpenAI") as mock_openai,
-            patch("sqlllm.infrastructure.llm.openai_service.AsyncOpenAI"),
+            patch("sq3m.infrastructure.llm.openai_service.OpenAI") as mock_openai,
+            patch("sq3m.infrastructure.llm.openai_service.AsyncOpenAI"),
         ):
             mock_openai.return_value = mock_openai_client
             service = OpenAIService("test-api-key", "gpt-3.5-turbo")
@@ -25,8 +25,8 @@ class TestOpenAIService:
 
     def test_openai_service_initialization(self) -> None:
         with (
-            patch("sqlllm.infrastructure.llm.openai_service.OpenAI") as mock_openai,
-            patch("sqlllm.infrastructure.llm.openai_service.AsyncOpenAI"),
+            patch("sq3m.infrastructure.llm.openai_service.OpenAI") as mock_openai,
+            patch("sq3m.infrastructure.llm.openai_service.AsyncOpenAI"),
         ):
             service = OpenAIService("test-api-key", "gpt-4")
 
@@ -35,8 +35,8 @@ class TestOpenAIService:
 
     def test_openai_service_default_model(self) -> None:
         with (
-            patch("sqlllm.infrastructure.llm.openai_service.OpenAI"),
-            patch("sqlllm.infrastructure.llm.openai_service.AsyncOpenAI"),
+            patch("sq3m.infrastructure.llm.openai_service.OpenAI"),
+            patch("sq3m.infrastructure.llm.openai_service.AsyncOpenAI"),
         ):
             service = OpenAIService("test-api-key")
             assert service.model == "gpt-3.5-turbo"

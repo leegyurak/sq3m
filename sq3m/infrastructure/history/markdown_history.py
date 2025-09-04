@@ -26,7 +26,7 @@ class MarkdownHistory:
         self.current_session_file = self.history_dir / filename
 
         # Create initial markdown content
-        initial_content = f"""# SQLLLM Conversation Session
+        initial_content = f"""# sq3m Conversation Session
 
 **Session ID:** {session_id}
 **Started:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}

@@ -4,9 +4,9 @@ import asyncio
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sqlllm.domain.entities.database import DatabaseSchema, Table
-    from sqlllm.domain.interfaces.database_repository import DatabaseRepository
-    from sqlllm.domain.interfaces.llm_service import LLMService
+    from sq3m.domain.entities.database import DatabaseSchema, Table
+    from sq3m.domain.interfaces.database_repository import DatabaseRepository
+    from sq3m.domain.interfaces.llm_service import LLMService
 
 
 class DatabaseAnalyzer:

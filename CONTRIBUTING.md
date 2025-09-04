@@ -1,6 +1,6 @@
-# Contributing to SQLLLM
+# Contributing to SQ3M
 
-Thank you for considering contributing to SQLLLM! This document provides guidelines and information for contributors.
+Thank you for considering contributing to sq3m! This document provides guidelines and information for contributors.
 
 ## 🤝 How to Contribute
 
@@ -38,8 +38,8 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/sqlllm.git
-cd sqlllm
+git clone https://github.com/YOUR_USERNAME/sq3m.git
+cd sq3m
 
 # Install uv if you haven't already
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -80,7 +80,7 @@ uv run pytest
 uv run pytest tests/unit
 
 # Run with coverage report
-uv run pytest --cov=sqlllm --cov-report=html
+uv run pytest --cov=sq3m --cov-report=html
 
 # Run specific test file
 uv run pytest tests/unit/test_specific_module.py
@@ -142,7 +142,7 @@ We use **mypy** for static type checking:
 
 ```bash
 # Run type checker
-uv run mypy sqlllm/
+uv run mypy sq3m/
 ```
 
 ### Pre-commit Hooks
@@ -156,12 +156,12 @@ Pre-commit hooks run automatically on commit and include:
 
 ## 🏗️ Architecture Guidelines
 
-SQLLLM follows **Clean Architecture** principles:
+sq3m follows **Clean Architecture** principles:
 
 ### Directory Structure
 
 ```
-sqlllm/
+sq3m/
 ├── domain/           # Business logic (no external dependencies)
 │   ├── entities/     # Core business objects
 │   └── interfaces/   # Abstract interfaces
@@ -273,7 +273,7 @@ Before submitting a PR, ensure:
 
 ## 🙏 Recognition
 
-All contributors will be recognized in our release notes and GitHub contributors section. Thank you for helping make SQLLLM better!
+All contributors will be recognized in our release notes and GitHub contributors section. Thank you for helping make sq3m better!
 
 ---
 

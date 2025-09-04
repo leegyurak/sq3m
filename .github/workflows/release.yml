@@ -28,8 +28,8 @@ jobs:
       run: |
         uv run ruff check .
         uv run ruff format --check .
-        uv run mypy sqlllm/
-        uv run pytest -v --cov=sqlllm --cov-fail-under=80
+        uv run mypy sq3m/
+        uv run pytest -v --cov=sq3m --cov-fail-under=80
 
     - name: Build package
       run: |
@@ -39,7 +39,7 @@ jobs:
       run: |
         ls -la dist/
         uv pip install dist/*.whl
-        uv run python -c "import sqlllm; print(f'Successfully installed sqlllm v{sqlllm.__version__}')"
+        uv run python -c "import sq3m; print(f'Successfully installed sq3m v{sq3m.__version__}')"
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1

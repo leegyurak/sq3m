@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sqlllm"
+name = "sq3m"
 version = "0.1.0"
 description = "Interactive CLI DB AI Agent for natural language to SQL conversion"
 readme = "README.md"
@@ -38,16 +38,16 @@ dependencies = [
 
 
 [project.scripts]
-sqlllm = "sqlllm.main:main"
+sq3m = "sq3m.main:main"
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/sqlllm"
-"Bug Reports" = "https://github.com/yourusername/sqlllm/issues"
-"Source" = "https://github.com/yourusername/sqlllm"
+"Homepage" = "https://github.com/yourusername/sq3m"
+"Bug Reports" = "https://github.com/yourusername/sq3m/issues"
+"Source" = "https://github.com/yourusername/sq3m"
 
 [tool.hatch.build.targets.wheel]
-packages = ["sqlllm"]
-include = ["sqlllm/py.typed"]
+packages = ["sq3m"]
+include = ["sq3m/py.typed"]
 
 [tool.ruff]
 target-version = "py310"
@@ -97,7 +97,7 @@ namespace_packages = true
 explicit_package_bases = true
 show_error_codes = true
 pretty = true
-packages = ["sqlllm"]
+packages = ["sq3m"]
 
 # Import settings
 ignore_missing_imports = false
@@ -143,17 +143,17 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["sqlllm"]
+source = ["sq3m"]
 omit = [
     "*/tests/*",
     # Exclude CLI entrypoints and runtime wrappers from unit coverage
-    "sqlllm/interface/cli/*",
-    "sqlllm/main.py",
+    "sq3m/interface/cli/*",
+    "sq3m/main.py",
     # Exclude external-service integrations that require network/credentials
-    "sqlllm/infrastructure/llm/openai_service.py",
+    "sq3m/infrastructure/llm/openai_service.py",
     # Exclude direct DB adapter implementations (covered by integration tests)
-    "sqlllm/infrastructure/database/mysql_repository.py",
-    "sqlllm/infrastructure/database/postgresql_repository.py",
+    "sq3m/infrastructure/database/mysql_repository.py",
+    "sq3m/infrastructure/database/postgresql_repository.py",
 ]
 
 [tool.coverage.report]

@@ -864,7 +864,7 @@ wheels = [
 ]
 
 [[package]]
-name = "sqlllm"
+name = "sq3m"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

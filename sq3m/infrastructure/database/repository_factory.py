@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlllm.domain.entities.database import DatabaseType
-from sqlllm.infrastructure.database.mysql_repository import MySQLRepository
-from sqlllm.infrastructure.database.postgresql_repository import PostgreSQLRepository
+from sq3m.domain.entities.database import DatabaseType
+from sq3m.infrastructure.database.mysql_repository import MySQLRepository
+from sq3m.infrastructure.database.postgresql_repository import PostgreSQLRepository
 
 if TYPE_CHECKING:
-    from sqlllm.domain.interfaces.database_repository import DatabaseRepository
+    from sq3m.domain.interfaces.database_repository import DatabaseRepository
 
 
 class DatabaseRepositoryFactory:

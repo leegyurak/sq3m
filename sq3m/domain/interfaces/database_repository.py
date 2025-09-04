@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from sqlllm.domain.entities.database import (
+    from sq3m.domain.entities.database import (
         DatabaseConnection,
         DatabaseSchema,
         Table,

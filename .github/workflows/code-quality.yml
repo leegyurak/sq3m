@@ -59,7 +59,7 @@ jobs:
 
     - name: Run MyPy type checker
       run: |
-        uv run mypy sqlllm/ --show-error-codes --pretty
+        uv run mypy sq3m/ --show-error-codes --pretty
 
     - name: MyPy type check for tests
       run: |
@@ -87,7 +87,7 @@ jobs:
 
     - name: Run Bandit security linter
       run: |
-        uv tool run bandit -r sqlllm/ -f json -o bandit-report.json
+        uv tool run bandit -r sq3m/ -f json -o bandit-report.json
       continue-on-error: true
 
     - name: Run Safety check
@@ -112,9 +112,9 @@ jobs:
 
     - name: Run Radon complexity analysis
       run: |
-        radon cc sqlllm/ --min B --show-complexity --average
+        radon cc sq3m/ --min B --show-complexity --average
 
     - name: Run Xenon complexity check
       run: |
-        xenon --max-absolute B --max-modules B sqlllm/
+        xenon --max-absolute B --max-modules B sq3m/
       continue-on-error: true

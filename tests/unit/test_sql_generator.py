@@ -4,10 +4,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from sqlllm.application.use_cases.sql_generator import SQLGenerator
-from sqlllm.domain.entities.database import SQLQuery, Table
-from sqlllm.domain.interfaces.database_repository import DatabaseRepository
-from sqlllm.domain.interfaces.llm_service import LLMService
+from sq3m.application.use_cases.sql_generator import SQLGenerator
+from sq3m.domain.entities.database import SQLQuery, Table
+from sq3m.domain.interfaces.database_repository import DatabaseRepository
+from sq3m.domain.interfaces.llm_service import LLMService
 
 
 class TestSQLGenerator:

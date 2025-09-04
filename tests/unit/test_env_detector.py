@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from sqlllm.infrastructure.config.env_detector import EnvironmentDetector
+from sq3m.infrastructure.config.env_detector import EnvironmentDetector
 
 
 @pytest.fixture  # type: ignore[misc]
@@ -38,7 +38,7 @@ class TestEnvironmentDetector:
 
             assert detector.system == "windows"
             assert detector.home_dir == temp_home_dir
-            expected_config = temp_home_dir / "AppData" / "Roaming" / "sqlllm"
+            expected_config = temp_home_dir / "AppData" / "Roaming" / "sq3m"
             assert detector.config_dir == expected_config
             assert detector.config_dir.exists()
 
@@ -55,7 +55,7 @@ class TestEnvironmentDetector:
 
         assert detector.system == "darwin"
         assert detector.home_dir == temp_home_dir
-        expected_config = temp_home_dir / "Library" / "Application Support" / "sqlllm"
+        expected_config = temp_home_dir / "Library" / "Application Support" / "sq3m"
         assert detector.config_dir == expected_config
         assert detector.config_dir.exists()
 
@@ -72,7 +72,7 @@ class TestEnvironmentDetector:
 
         assert detector.system == "linux"
         assert detector.home_dir == temp_home_dir
-        expected_config = temp_home_dir / ".config" / "sqlllm"
+        expected_config = temp_home_dir / ".config" / "sq3m"
         assert detector.config_dir == expected_config
         assert detector.config_dir.exists()
 
@@ -89,7 +89,7 @@ class TestEnvironmentDetector:
         with patch.dict(os.environ, {"XDG_CONFIG_HOME": str(xdg_config)}, clear=False):
             detector = EnvironmentDetector()
 
-            expected_config = xdg_config / "sqlllm"
+            expected_config = xdg_config / "sq3m"
             assert detector.config_dir == expected_config
             assert detector.config_dir.exists()
 

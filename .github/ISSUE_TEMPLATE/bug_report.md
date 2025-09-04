@@ -24,7 +24,7 @@ assignees: ''
 ## 🖥️ Environment
 - OS: [e.g. macOS 13.0, Ubuntu 22.04]
 - Python version: [e.g. 3.11.5]
-- SQLLLM version: [e.g. 0.1.0]
+- sq3m version: [e.g. 0.1.0]
 - Database: [e.g. PostgreSQL 15.0, MySQL 8.0]
 
 ## 📋 Additional Context

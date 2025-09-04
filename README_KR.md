@@ -1,4 +1,4 @@
-# SQLLLM - AI 기반 데이터베이스 쿼리 도우미
+# SQ3M - AI 기반 데이터베이스 쿼리 도우미
 
 <!-- Language Toggle -->
 <div align="center">
@@ -22,7 +22,7 @@
 
 ### pip 사용
 ```bash
-pip install sqlllm
+pip install sq3m
 ```
 
 ### uv 사용 (개발용 권장)
@@ -31,8 +31,8 @@ pip install sqlllm
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # 저장소 클론 및 설정
-git clone https://github.com/leegyurak/sqlllm.git
-cd sqlllm
+git clone https://github.com/leegyurak/sq3m.git
+cd sq3m
 uv sync
 ```
 
@@ -59,7 +59,7 @@ export LANGUAGE=ko  # en (영어) 또는 ko (한국어), 기본값: en
 
 ### 🌍 다국어 지원
 
-SQLLLM은 `LANGUAGE` 환경변수를 통해 다양한 시스템 프롬프트 언어를 지원합니다:
+sq3m은 `LANGUAGE` 환경변수를 통해 다양한 시스템 프롬프트 언어를 지원합니다:
 
 - **지원 언어**:
   - `en`: 영어 (기본값)
@@ -76,7 +76,7 @@ SQLLLM은 `LANGUAGE` 환경변수를 통해 다양한 시스템 프롬프트 언
 ```bash
 # 한국어 시스템 프롬프트 사용
 export LANGUAGE=ko
-sqlllm
+sq3m
 
 # 또는 .env 파일에서 설정
 echo "LANGUAGE=ko" >> .env
@@ -87,7 +87,7 @@ echo "LANGUAGE=ko" >> .env
 CLI 도구 실행:
 
 ```bash
-sqlllm
+sq3m
 ```
 
 도구는 다음 단계로 안내합니다:
@@ -116,7 +116,7 @@ sqlllm
 프로젝트는 클린 아키텍처 원칙을 따릅니다:
 
 ```
-sqlllm/
+sq3m/
 ├── domain/           # 비즈니스 로직과 엔티티
 │   ├── entities/     # 핵심 비즈니스 객체
 │   └── interfaces/   # 추상 인터페이스
@@ -156,8 +156,8 @@ pip install uv
 
 ```bash
 # 저장소 클론
-git clone https://github.com/leegyurak/sqlllm.git
-cd sqlllm
+git clone https://github.com/leegyurak/sq3m.git
+cd sq3m
 
 # Python 환경 초기화 및 의존성 설치
 uv sync --all-extras --dev
@@ -181,7 +181,7 @@ source .venv/bin/activate
 2. **테스트 실행**: `uv run pytest`
 3. **린팅 실행**: `uv run ruff check --fix .`
 4. **포맷팅 실행**: `uv run ruff format .`
-5. **타입 체킹 실행**: `uv run mypy sqlllm/`
+5. **타입 체킹 실행**: `uv run mypy sq3m/`
 6. **변경사항 커밋** (pre-commit 훅이 자동으로 실행됨)
 
 ### 테스트 실행
@@ -197,7 +197,7 @@ uv run pytest tests/unit
 uv run pytest tests/integration
 
 # 커버리지와 함께 실행
-uv run pytest --cov=sqlllm
+uv run pytest --cov=sq3m
 
 # 느린 테스트 제외하고 실행
 uv run pytest -m "not slow"
@@ -211,7 +211,7 @@ uv run ruff check --fix .
 uv run ruff format .
 
 # 타입 체킹
-uv run mypy sqlllm/
+uv run mypy sq3m/
 
 # pre-commit 훅 (커밋 시 자동 실행)
 uv run pre-commit run --all-files
@@ -221,11 +221,11 @@ uv run pre-commit run --all-files
 
 ```bash
 # uv로 직접 실행
-uv run sqlllm
+uv run sq3m
 
 # 또는 환경 활성화 후 실행
 source .venv/bin/activate
-sqlllm
+sq3m
 ```
 
 ## 📚 의존성

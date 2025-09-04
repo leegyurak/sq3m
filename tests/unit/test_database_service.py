@@ -5,11 +5,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from sqlllm.application.services.database_service import DatabaseService
-from sqlllm.domain.interfaces.llm_service import LLMService
+from sq3m.application.services.database_service import DatabaseService
+from sq3m.domain.interfaces.llm_service import LLMService
 
 if TYPE_CHECKING:
-    from sqlllm.domain.entities.database import DatabaseConnection, SQLQuery, Table
+    from sq3m.domain.entities.database import DatabaseConnection, SQLQuery, Table
 
 
 class TestDatabaseService:
@@ -21,7 +21,7 @@ class TestDatabaseService:
     def database_service(self, mock_llm_service: Mock) -> DatabaseService:
         return DatabaseService(mock_llm_service)
 
-    @patch("sqlllm.application.services.database_service.DatabaseRepositoryFactory")
+    @patch("sq3m.application.services.database_service.DatabaseRepositoryFactory")
     def test_connect_to_database_success(
         self,
         mock_factory: Mock,
@@ -47,7 +47,7 @@ class TestDatabaseService:
         mock_repository.connect.assert_called_once_with(sample_database_connection)
         assert database_service.database_repository is mock_repository
 
-    @patch("sqlllm.application.services.database_service.DatabaseRepositoryFactory")
+    @patch("sq3m.application.services.database_service.DatabaseRepositoryFactory")
     def test_connect_to_database_test_connection_fails(
         self,
         mock_factory: Mock,
@@ -66,7 +66,7 @@ class TestDatabaseService:
         assert result is False
         mock_repository.connect.assert_not_called()
 
-    @patch("sqlllm.application.services.database_service.DatabaseRepositoryFactory")
+    @patch("sq3m.application.services.database_service.DatabaseRepositoryFactory")
     def test_connect_to_database_exception(
         self,
         mock_factory: Mock,

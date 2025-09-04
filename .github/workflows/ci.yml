@@ -45,8 +45,8 @@ jobs:
 
     - name: Run security checks (Bandit)
       run: |
-        uv run bandit -r sqlllm/ -f json -o bandit-report.json || true
-        uv run bandit -r sqlllm/ || true
+        uv run bandit -r sq3m/ -f json -o bandit-report.json || true
+        uv run bandit -r sq3m/ || true
 
   test:
     runs-on: ubuntu-latest
@@ -74,4 +74,4 @@ jobs:
 
     - name: Run pytest
       run: |
-        uv run pytest -v --cov=sqlllm --cov-report=term-missing
+        uv run pytest -v --cov=sq3m --cov-report=term-missing

@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from sqlllm.infrastructure.history.markdown_history import MarkdownHistory
+from sq3m.infrastructure.history.markdown_history import MarkdownHistory
 
 
 @pytest.fixture  # type: ignore[misc]
@@ -41,7 +41,7 @@ class TestMarkdownHistory:
     def test_get_session_filename(self, history_service: Any) -> None:
         """Test session filename generation."""
         with patch(
-            "sqlllm.infrastructure.history.markdown_history.datetime"
+            "sq3m.infrastructure.history.markdown_history.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 30, 45)
 
@@ -52,7 +52,7 @@ class TestMarkdownHistory:
     def test_get_session_filename_special_chars(self, history_service: Any) -> None:
         """Test session filename generation with special characters."""
         with patch(
-            "sqlllm.infrastructure.history.markdown_history.datetime"
+            "sq3m.infrastructure.history.markdown_history.datetime"
         ) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 30, 45)
 
@@ -74,7 +74,7 @@ class TestMarkdownHistory:
 
         # Check file content
         content = history_service.current_session_file.read_text()
-        assert "# SQLLLM Conversation Session" in content
+        assert "# sq3m Conversation Session" in content
         assert "**Session ID:** test_session" in content
         assert "**Database:** test_db" in content
 
@@ -232,7 +232,7 @@ class TestMarkdownHistory:
         """Test getting recent session information."""
         # Create a test session file with content
         session_file = history_service.history_dir / "test_session.md"
-        content = """# SQLLLM Conversation Session
+        content = """# sq3m Conversation Session
 
 **Session ID:** test_123
 **Started:** 2024-01-01 10:00:00
@@ -264,7 +264,7 @@ Some content here
 
         # Mock aiofiles.open to raise an exception
         with patch(
-            "sqlllm.infrastructure.history.markdown_history.aiofiles.open",
+            "sq3m.infrastructure.history.markdown_history.aiofiles.open",
             side_effect=OSError("Mock error"),
         ):
             sessions = await history_service.get_recent_sessions()

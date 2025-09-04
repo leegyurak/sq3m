@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from sqlllm.domain.entities.database import DatabaseType
-from sqlllm.infrastructure.database.mysql_repository import MySQLRepository
-from sqlllm.infrastructure.database.postgresql_repository import PostgreSQLRepository
-from sqlllm.infrastructure.database.repository_factory import DatabaseRepositoryFactory
+from sq3m.domain.entities.database import DatabaseType
+from sq3m.infrastructure.database.mysql_repository import MySQLRepository
+from sq3m.infrastructure.database.postgresql_repository import PostgreSQLRepository
+from sq3m.infrastructure.database.repository_factory import DatabaseRepositoryFactory
 
 
 class TestDatabaseRepositoryFactory:

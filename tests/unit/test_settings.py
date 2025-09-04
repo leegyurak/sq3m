@@ -4,14 +4,14 @@ from unittest.mock import patch
 
 import pytest
 
-from sqlllm.config.settings import Settings
-from sqlllm.domain.entities.database import DatabaseType
+from sq3m.config.settings import Settings
+from sq3m.domain.entities.database import DatabaseType
 
 
 class TestSettings:
     @pytest.fixture  # type: ignore[misc]
     def settings(self) -> Settings:
-        with patch("sqlllm.config.settings.load_dotenv"):
+        with patch("sq3m.config.settings.load_dotenv"):
             return Settings()
 
     @patch.dict("os.environ", {})

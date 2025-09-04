@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from sqlllm.infrastructure.prompts.prompt_loader import PromptLoader
+from sq3m.infrastructure.prompts.prompt_loader import PromptLoader
 
 
 @pytest.fixture  # type: ignore[misc]
@@ -93,7 +93,7 @@ class TestPromptLoader:
         with (
             patch.dict(os.environ, {"SYSTEM_PROMPT_FILE": "env_file_prompt.txt"}),
             patch(
-                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                "sq3m.infrastructure.config.env_detector.EnvironmentDetector",
                 return_value=mock_detector,
             ),
         ):
@@ -126,7 +126,7 @@ class TestPromptLoader:
                 },
             ),
             patch(
-                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                "sq3m.infrastructure.config.env_detector.EnvironmentDetector",
                 return_value=mock_detector,
             ),
         ):
@@ -156,7 +156,7 @@ class TestPromptLoader:
                 },
             ),
             patch(
-                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                "sq3m.infrastructure.config.env_detector.EnvironmentDetector",
                 return_value=mock_detector,
             ),
         ):
@@ -203,7 +203,7 @@ class TestPromptLoader:
         assert template_path.exists()
 
         content = template_path.read_text()
-        assert "# Custom System Prompt for SQLLLM" in content
+        assert "# Custom System Prompt for sq3m" in content
         assert "SYSTEM_PROMPT_PATH" in content
         assert "SYSTEM_PROMPT_FILE" in content
         # Should contain the default prompt as reference
@@ -258,7 +258,7 @@ class TestPromptLoader:
                 },
             ),
             patch(
-                "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+                "sq3m.infrastructure.config.env_detector.EnvironmentDetector",
                 return_value=mock_detector,
             ),
         ):
@@ -280,7 +280,7 @@ class TestPromptLoader:
         mock_detector.config_dir = temp_dirs["config"]
 
         with patch(
-            "sqlllm.infrastructure.config.env_detector.EnvironmentDetector",
+            "sq3m.infrastructure.config.env_detector.EnvironmentDetector",
             return_value=mock_detector,
         ):
             # Test custom path parameter (highest priority)

@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from sqlllm.application.use_cases.database_analyzer import DatabaseAnalyzer
-from sqlllm.domain.entities.database import Column, DatabaseSchema, DatabaseType, Table
-from sqlllm.infrastructure.config.env_detector import EnvironmentDetector
-from sqlllm.infrastructure.history.markdown_history import MarkdownHistory
-from sqlllm.infrastructure.llm.openai_service import OpenAIService
+from sq3m.application.use_cases.database_analyzer import DatabaseAnalyzer
+from sq3m.domain.entities.database import Column, DatabaseSchema, DatabaseType, Table
+from sq3m.infrastructure.config.env_detector import EnvironmentDetector
+from sq3m.infrastructure.history.markdown_history import MarkdownHistory
+from sq3m.infrastructure.llm.openai_service import OpenAIService
 
 
 @pytest.fixture  # type: ignore[misc]

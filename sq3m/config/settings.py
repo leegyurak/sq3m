@@ -4,7 +4,7 @@ import os
 
 from dotenv import load_dotenv
 
-from sqlllm.domain.entities.database import DatabaseType
+from sq3m.domain.entities.database import DatabaseType
 
 
 class Settings:

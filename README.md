@@ -1,4 +1,4 @@
-# SQLLLM - AI-Powered Database Query Assistant
+# SQ3M - AI-Powered Database Query Assistant
 
 <!-- Language Toggle -->
 <div align="center">
@@ -22,7 +22,7 @@ A Python CLI tool that converts natural language queries into SQL using Large La
 
 ### Using pip
 ```bash
-pip install sqlllm
+pip install sq3m
 ```
 
 ### Using uv (recommended for development)
@@ -31,8 +31,8 @@ pip install sqlllm
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone the repository and setup
-git clone https://github.com/leegyurak/sqlllm.git
-cd sqlllm
+git clone https://github.com/leegyurak/sq3m.git
+cd sq3m
 uv sync
 ```
 
@@ -59,7 +59,7 @@ export LANGUAGE=en  # en (English) or ko (Korean), defaults to en
 
 ### 🌍 Multi-language Support
 
-SQLLLM supports multiple system prompt languages through the `LANGUAGE` environment variable:
+sq3m supports multiple system prompt languages through the `LANGUAGE` environment variable:
 
 - **Supported Languages**:
   - `en`: English (default)
@@ -76,7 +76,7 @@ SQLLLM supports multiple system prompt languages through the `LANGUAGE` environm
 ```bash
 # Use Korean system prompts
 export LANGUAGE=ko
-sqlllm
+sq3m
 
 # Or set in .env file
 echo "LANGUAGE=ko" >> .env
@@ -87,7 +87,7 @@ echo "LANGUAGE=ko" >> .env
 Run the CLI tool:
 
 ```bash
-sqlllm
+sq3m
 ```
 
 The tool will guide you through:
@@ -116,7 +116,7 @@ The tool will guide you through:
 The project follows Clean Architecture principles:
 
 ```
-sqlllm/
+sq3m/
 ├── domain/           # Business logic and entities
 │   ├── entities/     # Core business objects
 │   └── interfaces/   # Abstract interfaces
@@ -156,8 +156,8 @@ pip install uv
 
 ```bash
 # Clone the repository
-git clone https://github.com/leegyurak/sqlllm.git
-cd sqlllm
+git clone https://github.com/leegyurak/sq3m.git
+cd sq3m
 
 # Initialize Python environment and install dependencies
 uv sync --all-extras --dev
@@ -181,7 +181,7 @@ source .venv/bin/activate
 2. **Run tests**: `uv run pytest`
 3. **Run linting**: `uv run ruff check --fix .`
 4. **Run formatting**: `uv run ruff format .`
-5. **Run type checking**: `uv run mypy sqlllm/`
+5. **Run type checking**: `uv run mypy sq3m/`
 6. **Commit changes** (pre-commit hooks will run automatically)
 
 ### Running Tests
@@ -197,7 +197,7 @@ uv run pytest tests/unit
 uv run pytest tests/integration
 
 # Run with coverage
-uv run pytest --cov=sqlllm
+uv run pytest --cov=sq3m
 
 # Run tests excluding slow ones
 uv run pytest -m "not slow"
@@ -211,7 +211,7 @@ uv run ruff check --fix .
 uv run ruff format .
 
 # Type checking
-uv run mypy sqlllm/
+uv run mypy sq3m/
 
 # Pre-commit hooks (run automatically on commit)
 uv run pre-commit run --all-files
@@ -221,11 +221,11 @@ uv run pre-commit run --all-files
 
 ```bash
 # Run directly with uv
-uv run sqlllm
+uv run sq3m
 
 # Or activate environment first
 source .venv/bin/activate
-sqlllm
+sq3m
 ```
 
 ## 📚 Dependencies

@@ -51,7 +51,7 @@ class DatabaseService:
         except Exception:
             return False
 
-    def analyze_database_schema(self) -> dict[str, str]:
+    def analyze_database_schema(self) -> Any:
         if not self.database_analyzer:
             raise ValueError("Database not connected")
 
@@ -65,7 +65,7 @@ class DatabaseService:
 
         return self.sql_generator.generate_sql(natural_language, self.tables_cache)
 
-    def execute_query(self, sql: str) -> list[dict[str, Any]]:
+    def execute_query(self, sql: str) -> Any:
         if not self.database_repository:
             raise ValueError("Database not connected")
 
@@ -73,7 +73,7 @@ class DatabaseService:
 
     def generate_and_execute_query(
         self, natural_language: str, max_retries: int = 2
-    ) -> tuple[SQLQuery, list[dict[str, Any]]]:
+    ) -> Any:
         if not self.sql_generator:
             raise ValueError("Database not connected")
 

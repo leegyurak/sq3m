@@ -88,7 +88,7 @@ def cleanup_chat_sessions() -> Generator[Callable[[Any], None], None, None]:
 @pytest.fixture(scope="function")  # type: ignore[misc]
 def temp_chat_dir() -> Generator[Path, None, None]:
     """Create a temporary directory for chat sessions."""
-    temp_dir = tempfile.mkdtemp(prefix="sqlllm_test_chat_")
+    temp_dir = tempfile.mkdtemp(prefix="sq3m_test_chat_")
     temp_path = Path(temp_dir)
 
     yield temp_path
@@ -138,9 +138,9 @@ def cleanup_temp_files() -> Generator[None, None, None]:
                 "*session*.md",
                 "*conversation*.md",
                 "*chat*.md",
-                "sqlllm_test_*",
+                "sq3m_test_*",
                 "*_test_session_*",
-                "*SQLLLM*session*.md",
+                "*sq3m*session*.md",
                 "[0-9]*_[0-9]*_*.md",  # Timestamp pattern files
             ]
 
@@ -165,7 +165,7 @@ def _is_session_file(file_path: Path) -> bool:
         # Check filename patterns
         name = file_path.name.lower()
         if any(
-            keyword in name for keyword in ["session", "conversation", "chat", "sqlllm"]
+            keyword in name for keyword in ["session", "conversation", "chat", "sq3m"]
         ):
             return True
 
@@ -180,12 +180,12 @@ def _is_session_file(file_path: Path) -> bool:
             :500
         ]  # First 500 chars
         session_markers = [
-            "# SQLLLM Conversation Session",
+            "# sq3m Conversation Session",
             "**Session ID:**",
             "**Started:**",
             "## User Query",
             "## Generated SQL",
-            "SQLLLM Conversation",
+            "sq3m Conversation",
         ]
 
         return any(marker in content for marker in session_markers)

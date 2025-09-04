@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from sqlllm.domain.entities.database import (
+from sq3m.domain.entities.database import (
     Column,
     DatabaseConnection,
     DatabaseSchema,
