@@ -151,6 +151,10 @@ LOG_LEVEL=INFO
 
         return clients
 
+    # Backwards-compat alias used in tests or external code
+    def detect_database_clients(self) -> dict[str, bool]:
+        return self.detect_db_clients()
+
     def _command_exists(self, command: str) -> bool:
         """Check if a command exists in the system PATH."""
         if self.system == "windows":

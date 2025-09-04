@@ -22,14 +22,19 @@ class PostgreSQLRepository(DatabaseRepository):
         self.cursor: Any = None
 
     def connect(self, connection: DatabaseConnection) -> None:
-        self.connection = psycopg2.connect(
-            host=connection.host,
-            port=connection.port,
-            user=connection.username,
-            password=connection.password,
-            database=connection.database,
-        )
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        try:
+            self.connection = psycopg2.connect(
+                host=connection.host,
+                port=connection.port,
+                user=connection.username,
+                password=connection.password,
+                database=connection.database,
+            )
+            self.cursor = self.connection.cursor(
+                cursor_factory=psycopg2.extras.DictCursor
+            )
+        except Exception as exc:  # Normalize connection errors for tests/consumers
+            raise ConnectionError(f"Failed to connect to PostgreSQL: {exc}") from exc
 
     def disconnect(self) -> None:
         if self.cursor:

@@ -47,7 +47,7 @@ class PromptLoader:
                 print(f"Warning: Custom system prompt file not found at {prompt_path}")
                 print("Falling back to language-specific prompt")
                 # Try to get language-specific prompt
-                language = os.getenv("LANGUAGE", "en").lower()
+                language = self.get_current_language()
                 if (
                     language in self.language_prompts
                     and self.language_prompts[language].exists()
@@ -97,7 +97,7 @@ class PromptLoader:
             return config_dir / env_file
 
         # 4. Language-specific prompt file (final fallback)
-        language = os.getenv("LANGUAGE", "en").lower()
+        language = self.get_current_language()
         if language in self.language_prompts:
             return self.language_prompts[language]
 
@@ -176,8 +176,8 @@ class PromptLoader:
         return info
 
     def get_current_language(self) -> str:
-        """Get the current language setting."""
-        return os.getenv("LANGUAGE", "en").lower()
+        """Get the current language setting (prefer app-specific override)."""
+        return os.getenv("SQLLLM_LANGUAGE", "en").lower()
 
     def get_available_languages(self) -> list[str]:
         """Get list of available language codes."""

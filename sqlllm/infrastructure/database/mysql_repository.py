@@ -21,16 +21,19 @@ class MySQLRepository(DatabaseRepository):
         self.cursor: Any = None
 
     def connect(self, connection: DatabaseConnection) -> None:
-        self.connection = pymysql.connect(
-            host=connection.host,
-            port=connection.port,
-            user=connection.username,
-            password=connection.password,
-            database=connection.database,
-            charset="utf8mb4",
-            cursorclass=pymysql.cursors.DictCursor,
-        )
-        self.cursor = self.connection.cursor()
+        try:
+            self.connection = pymysql.connect(
+                host=connection.host,
+                port=connection.port,
+                user=connection.username,
+                password=connection.password,
+                database=connection.database,
+                charset="utf8mb4",
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+            self.cursor = self.connection.cursor()
+        except Exception as exc:  # Normalize connection errors for tests/consumers
+            raise ConnectionError(f"Failed to connect to MySQL: {exc}") from exc
 
     def disconnect(self) -> None:
         if self.cursor:
