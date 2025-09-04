@@ -5,9 +5,9 @@ from typing import Any
 
 from openai import AsyncOpenAI, OpenAI
 
-from ...domain.entities.database import SQLQuery, Table
-from ...domain.interfaces.llm_service import LLMService
-from ..prompts.prompt_loader import PromptLoader
+from sqlllm.domain.entities.database import SQLQuery, Table
+from sqlllm.domain.interfaces.llm_service import LLMService
+from sqlllm.infrastructure.prompts.prompt_loader import PromptLoader
 
 
 class OpenAIService(LLMService):

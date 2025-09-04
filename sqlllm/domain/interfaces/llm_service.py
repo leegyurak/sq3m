@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..entities.database import SQLQuery, Table
+    from sqlllm.domain.entities.database import SQLQuery, Table
 
 
 class LLMService(ABC):

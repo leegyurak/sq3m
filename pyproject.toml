@@ -168,6 +168,7 @@ dev = [
     "ruff==0.12.11",
     "pre-commit>=3.0.0",
     "mypy==1.17.1",
+    "bandit>=1.8.0",
     "types-requests>=2.31.0",
     "types-aiofiles>=24.1.0.20250822",
     "types-psutil>=7.0.0.20250822",

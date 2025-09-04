@@ -4,7 +4,11 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..entities.database import DatabaseConnection, DatabaseSchema, Table
+    from sqlllm.domain.entities.database import (
+        DatabaseConnection,
+        DatabaseSchema,
+        Table,
+    )
 
 
 class DatabaseRepository(ABC):

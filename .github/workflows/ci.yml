@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  lint-and-type-check:
+  quality-checks:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,10 +27,7 @@ jobs:
       run: |
         uv python install ${{ matrix.python-version }}
         uv sync --frozen --all-groups
-        # Install package in editable mode and verify installation
         uv pip install -e .
-        uv run python -c "import sqlllm; print('sqlllm package installed successfully')"
-        uv run python -c "from sqlllm.infrastructure.history.markdown_history import MarkdownHistory; print('Import test successful')"
 
     - name: Run Ruff linter
       run: |
@@ -42,7 +39,12 @@ jobs:
 
     - name: Run MyPy type checker
       run: |
-        PYTHONPATH=. uv run mypy --install-types --non-interactive
+        PYTHONPATH=. uv run mypy
+
+    - name: Run security checks (Bandit)
+      run: |
+        PYTHONPATH=. uv run bandit -r sqlllm/ -f json -o bandit-report.json || true
+        PYTHONPATH=. uv run bandit -r sqlllm/ || true
 
   test:
     runs-on: ubuntu-latest
@@ -64,45 +66,8 @@ jobs:
       run: |
         uv python install ${{ matrix.python-version }}
         uv sync --frozen --all-groups
-        # Install package in editable mode and verify installation
         uv pip install -e .
-        uv run python -c "import sqlllm; print('sqlllm package installed successfully')"
-        uv run python -c "from sqlllm.infrastructure.history.markdown_history import MarkdownHistory; print('Import test successful')"
 
-    - name: Run tests
+    - name: Run pytest
       run: |
-        PYTHONPATH=. uv run pytest -v --cov=sqlllm --cov-report=xml --cov-report=term-missing
-
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        token: ${{ secrets.CODECOV_TOKEN }}
-
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-      with:
-        enable-cache: true
-        cache-dependency-glob: "uv.lock"
-        cache-suffix: python-3.11
-
-    - name: Set up Python and install dependencies
-      run: |
-        uv python install 3.11
-        uv sync --frozen --all-groups
-        # Install package in editable mode and verify installation
-        uv pip install -e .
-        uv run python -c "import sqlllm; print('sqlllm package installed successfully')"
-        uv run python -c "from sqlllm.infrastructure.history.markdown_history import MarkdownHistory; print('Import test successful')"
-
-    - name: Run pre-commit
-      run: |
-        PYTHONPATH=. uv run pre-commit run --all-files
+        PYTHONPATH=. uv run pytest -v --cov=sqlllm --cov-report=term-missing

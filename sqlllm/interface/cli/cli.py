@@ -9,10 +9,10 @@ from rich.prompt import Confirm, Prompt
 from rich.syntax import Syntax
 from rich.table import Table
 
-from ...application.services.database_service import DatabaseService
-from ...config.settings import Settings
-from ...domain.entities.database import DatabaseConnection, DatabaseType
-from ...infrastructure.llm.openai_service import OpenAIService
+from sqlllm.application.services.database_service import DatabaseService
+from sqlllm.config.settings import Settings
+from sqlllm.domain.entities.database import DatabaseConnection, DatabaseType
+from sqlllm.infrastructure.llm.openai_service import OpenAIService
 
 
 class CLI:

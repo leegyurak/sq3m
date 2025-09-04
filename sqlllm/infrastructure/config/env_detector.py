@@ -232,7 +232,7 @@ LOG_LEVEL=INFO
         if not prompt_file.exists():
             # Import here to avoid circular imports
             try:
-                from ..prompts.prompt_loader import PromptLoader
+                from sqlllm.infrastructure.prompts.prompt_loader import PromptLoader
 
                 loader = PromptLoader()
                 default_content = loader.load_system_prompt()

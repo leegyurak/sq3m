@@ -3,13 +3,12 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any
 
+from sqlllm.domain.entities.database import SQLQuery, Table
 from sqlllm.infrastructure.history.markdown_history import MarkdownHistory
 
-from ...domain.entities.database import SQLQuery, Table
-
 if TYPE_CHECKING:
-    from ...domain.interfaces.database_repository import DatabaseRepository
-    from ...domain.interfaces.llm_service import LLMService
+    from sqlllm.domain.interfaces.database_repository import DatabaseRepository
+    from sqlllm.domain.interfaces.llm_service import LLMService
 
 
 class SQLGenerator:

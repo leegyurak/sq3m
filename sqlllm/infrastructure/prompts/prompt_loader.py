@@ -90,7 +90,7 @@ class PromptLoader:
         env_file = os.getenv("SYSTEM_PROMPT_FILE")
         if env_file:
             # Get config directory from environment detector
-            from ..config.env_detector import EnvironmentDetector
+            from sqlllm.infrastructure.config.env_detector import EnvironmentDetector
 
             detector = EnvironmentDetector()
             config_dir = detector.config_dir
@@ -156,7 +156,7 @@ class PromptLoader:
 
         env_file = os.getenv("SYSTEM_PROMPT_FILE")
         if env_file:
-            from ..config.env_detector import EnvironmentDetector
+            from sqlllm.infrastructure.config.env_detector import EnvironmentDetector
 
             detector = EnvironmentDetector()
             config_path = detector.config_dir / env_file

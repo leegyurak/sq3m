@@ -5,7 +5,7 @@ from typing import Any
 import psycopg2
 import psycopg2.extras
 
-from ...domain.entities.database import (
+from sqlllm.domain.entities.database import (
     Column,
     DatabaseConnection,
     DatabaseSchema,
@@ -13,7 +13,7 @@ from ...domain.entities.database import (
     Index,
     Table,
 )
-from ...domain.interfaces.database_repository import DatabaseRepository
+from sqlllm.domain.interfaces.database_repository import DatabaseRepository
 
 
 class PostgreSQLRepository(DatabaseRepository):
