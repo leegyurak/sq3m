@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sq3m"
-version = "0.1.0"
+version = "0.1.1"
 description = "Interactive CLI DB AI Agent for natural language to SQL conversion"
 readme = "README.md"
 requires-python = ">=3.10"
