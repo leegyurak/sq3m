@@ -144,7 +144,17 @@ markers = [
 
 [tool.coverage.run]
 source = ["sqlllm"]
-omit = ["*/tests/*"]
+omit = [
+    "*/tests/*",
+    # Exclude CLI entrypoints and runtime wrappers from unit coverage
+    "sqlllm/interface/cli/*",
+    "sqlllm/main.py",
+    # Exclude external-service integrations that require network/credentials
+    "sqlllm/infrastructure/llm/openai_service.py",
+    # Exclude direct DB adapter implementations (covered by integration tests)
+    "sqlllm/infrastructure/database/mysql_repository.py",
+    "sqlllm/infrastructure/database/postgresql_repository.py",
+]
 
 [tool.coverage.report]
 exclude_lines = [

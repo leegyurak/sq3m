@@ -24,6 +24,20 @@ def pytest_configure(config: pytest.Config) -> None:
     )
 
 
+@pytest.fixture(autouse=True)  # type: ignore[misc]
+def _clear_env_for_determinism(monkeypatch: Any) -> None:
+    """Ensure environment-dependent settings don't leak into tests.
+
+    Some environments may define variables like OPENAI_MODEL via a local .env or
+    shell session. Clear a few known keys so tests remain deterministic.
+    """
+    for key in [
+        "OPENAI_MODEL",
+        "LANGUAGE",
+    ]:
+        monkeypatch.delenv(key, raising=False)
+
+
 @pytest.fixture(scope="function")  # type: ignore[misc]
 def cleanup_chat_sessions() -> Generator[Callable[[Any], None], None, None]:
     """Fixture to ensure chat sessions are cleaned up after each test."""
