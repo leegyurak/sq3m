@@ -80,7 +80,7 @@ checkpoints/
 *.h5
 *.hdf5
 
-# Conversation history
+# Conversation history (project root only)
 conversations/
-history/
+/history/
 *.md.backup
