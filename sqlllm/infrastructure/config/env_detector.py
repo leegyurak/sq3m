@@ -14,7 +14,13 @@ class EnvironmentDetector:
         self.config_dir = self._get_config_dir()
 
     def _get_config_dir(self) -> Path:
-        """Get the appropriate configuration directory based on the OS."""
+        """Get the appropriate configuration directory based on the OS.
+
+        Notes:
+            - For Linux/Unix, prefer XDG_CONFIG_HOME only if it points inside the
+              current user's home directory. This avoids CI environments leaking
+              global XDG settings into tests that patch Path.home().
+        """
         if self.system == "windows":
             config_dir = (
                 Path(os.getenv("APPDATA", self.home_dir / "AppData" / "Roaming"))
@@ -23,8 +29,17 @@ class EnvironmentDetector:
         elif self.system == "darwin":  # macOS
             config_dir = self.home_dir / "Library" / "Application Support" / "sqlllm"
         else:  # Linux and other Unix-like systems
-            xdg_config = os.getenv("XDG_CONFIG_HOME", self.home_dir / ".config")
-            config_dir = Path(xdg_config) / "sqlllm"
+            home_config = self.home_dir / ".config"
+            xdg_env = os.getenv("XDG_CONFIG_HOME")
+            if xdg_env:
+                xdg_path = Path(xdg_env)
+                # Use XDG only if it points under the current (possibly patched) home
+                if str(xdg_path).startswith(str(self.home_dir)):
+                    config_dir = xdg_path / "sqlllm"
+                else:
+                    config_dir = home_config / "sqlllm"
+            else:
+                config_dir = home_config / "sqlllm"
 
         # Create config directory if it doesn't exist
         config_dir.mkdir(parents=True, exist_ok=True)
@@ -172,8 +187,8 @@ LOG_LEVEL=INFO
         """Get recommended settings based on the detected environment."""
         settings = {}
 
-        # Get detected clients
-        db_clients = self.detect_db_clients()
+        # Get detected clients (use alias so tests can patch it)
+        db_clients = self.detect_database_clients()
 
         # Recommend database types based on available clients
         available_dbs = [db for db, available in db_clients.items() if available]
