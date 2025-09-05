@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
 
 
 class PromptLoader:
@@ -10,12 +9,9 @@ class PromptLoader:
 
     def __init__(self) -> None:
         self.default_prompt_dir = Path(__file__).parent
-
-        # Language-specific prompt files (no default fallback file)
-        self.language_prompts = {
-            "ko": self.default_prompt_dir / "default_system_prompt_kor.md",
-            "en": self.default_prompt_dir / "default_system_prompt_en.md",
-        }
+        self.default_prompt_file = (
+            self.default_prompt_dir / "default_system_prompt_en.md"
+        )
 
     def load_system_prompt(self, custom_path: str | None = None) -> str:
         """
@@ -25,7 +21,7 @@ class PromptLoader:
         1. custom_path parameter (if provided)
         2. SYSTEM_PROMPT_PATH environment variable
         3. SYSTEM_PROMPT_FILE environment variable (filename in config dir)
-        4. Language-specific prompt file (based on LANGUAGE env var: ko/en)
+        4. Default system prompt file
 
         Args:
             custom_path: Optional direct path to prompt file
@@ -38,38 +34,19 @@ class PromptLoader:
         try:
             return prompt_path.read_text(encoding="utf-8").strip()
         except FileNotFoundError:
-            # If custom path fails, try to fallback to language-specific prompt
+            # If custom path fails, try to fallback to default prompt
             if (
                 custom_path
                 or os.getenv("SYSTEM_PROMPT_PATH")
                 or os.getenv("SYSTEM_PROMPT_FILE")
             ):
                 print(f"Warning: Custom system prompt file not found at {prompt_path}")
-                print("Falling back to language-specific prompt")
-                # Try to get language-specific prompt
-                language = self.get_current_language()
-                if (
-                    language in self.language_prompts
-                    and self.language_prompts[language].exists()
-                ):
-                    return (
-                        self.language_prompts[language]
-                        .read_text(encoding="utf-8")
-                        .strip()
-                    )
-                # If preferred language doesn't exist, try English
-                elif self.language_prompts["en"].exists():
-                    return (
-                        self.language_prompts["en"].read_text(encoding="utf-8").strip()
-                    )
-                # Last resort: try Korean
-                elif self.language_prompts["ko"].exists():
-                    return (
-                        self.language_prompts["ko"].read_text(encoding="utf-8").strip()
-                    )
+                print("Falling back to default system prompt")
+                if self.default_prompt_file.exists():
+                    return self.default_prompt_file.read_text(encoding="utf-8").strip()
 
             raise RuntimeError(
-                f"System prompt file not found at {prompt_path} and no language-specific prompts available"
+                f"System prompt file not found at {prompt_path} and default prompt not available"
             )
         except Exception as e:
             raise RuntimeError(f"Failed to load system prompt from {prompt_path}: {e}")
@@ -96,13 +73,8 @@ class PromptLoader:
             config_dir = detector.config_dir
             return config_dir / env_file
 
-        # 4. Language-specific prompt file (final fallback)
-        language = self.get_current_language()
-        if language in self.language_prompts:
-            return self.language_prompts[language]
-
-        # 5. Default to English if language not supported
-        return self.language_prompts["en"]
+        # 4. Default system prompt file
+        return self.default_prompt_file
 
     def create_custom_prompt_template(self, output_path: str) -> Path:
         """
@@ -168,33 +140,4 @@ class PromptLoader:
         info["current_prompt_path"] = str(current_path)
         info["current_prompt_exists"] = current_path.exists()
 
-        # Add language-specific prompt info
-        current_lang = self.get_current_language()
-        info["current_language"] = current_lang
-        info["available_languages"] = self.get_available_languages()
-
         return info
-
-    def get_current_language(self) -> str:
-        """Get the current language setting (prefer app-specific override)."""
-        return os.getenv("SQ3M_LANGUAGE", "en").lower()
-
-    def get_available_languages(self) -> list[str]:
-        """Get list of available language codes."""
-        available = []
-        for lang_code, prompt_path in self.language_prompts.items():
-            if prompt_path.exists():
-                available.append(lang_code)
-        return sorted(available)
-
-    def get_language_info(self) -> dict[str, Any]:
-        """Get information about language-specific prompts."""
-        current_lang = self.get_current_language()
-        return {
-            "current_language": current_lang,
-            "available_languages": self.get_available_languages(),
-            "language_prompts": {
-                lang: {"path": str(path), "exists": path.exists()}
-                for lang, path in self.language_prompts.items()
-            },
-        }

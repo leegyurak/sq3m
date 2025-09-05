@@ -52,34 +52,6 @@ export DB_PORT=3306
 export DB_NAME=your_database
 export DB_USERNAME=your_username
 export DB_PASSWORD=your_password
-
-# Language Configuration (Optional)
-export LANGUAGE=en  # en (English) or ko (Korean), defaults to en
-```
-
-### 🌍 Multi-language Support
-
-sq3m supports multiple system prompt languages through the `LANGUAGE` environment variable:
-
-- **Supported Languages**:
-  - `en`: English (default)
-  - `ko`: Korean
-
-- **Priority Order for System Prompts**:
-  1. Custom path parameter (directly specified)
-  2. `SYSTEM_PROMPT_PATH` environment variable (absolute path)
-  3. `SYSTEM_PROMPT_FILE` environment variable (filename in config directory)
-  4. **Language-specific default prompt** (based on LANGUAGE environment variable)
-  5. Default fallback prompt
-
-**Example Usage:**
-```bash
-# Use Korean system prompts
-export LANGUAGE=ko
-sq3m
-
-# Or set in .env file
-echo "LANGUAGE=ko" >> .env
 ```
 
 ## 🔧 How to Use
@@ -186,20 +158,6 @@ While in the interactive mode, you can use these special commands:
 | `help` or `h` | Display available commands |
 | `quit`, `exit`, or `q` | Exit the application |
 
-### 🌍 Language Support
-
-sq3m supports multiple languages for system prompts:
-
-```bash
-# Use Korean prompts
-export LANGUAGE=ko
-sq3m
-
-# Use English prompts (default)
-export LANGUAGE=en
-sq3m
-```
-
 ### 🔧 Advanced Configuration
 
 Create a `.env` file in your working directory:
@@ -215,8 +173,6 @@ DB_PORT=5432
 DB_NAME=myapp_production
 DB_USERNAME=myuser
 DB_PASSWORD=mypassword
-
-LANGUAGE=ko  # Use Korean prompts
 ```
 
 ### 💡 Tips for Better Results

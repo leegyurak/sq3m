@@ -33,7 +33,6 @@ def _clear_env_for_determinism(monkeypatch: Any) -> None:
     """
     for key in [
         "OPENAI_MODEL",
-        "LANGUAGE",
     ]:
         monkeypatch.delenv(key, raising=False)
 

@@ -38,12 +38,8 @@ class TestPromptLoader:
     def test_init(self, prompt_loader: Any) -> None:
         """Test PromptLoader initialization."""
         assert prompt_loader.default_prompt_dir.exists()
-        # Check that language-specific prompt files exist
-        assert len(prompt_loader.language_prompts) == 2
-        assert "en" in prompt_loader.language_prompts
-        assert "ko" in prompt_loader.language_prompts
-        assert prompt_loader.language_prompts["en"].exists()
-        assert prompt_loader.language_prompts["ko"].exists()
+        # Check that default prompt file exists
+        assert prompt_loader.default_prompt_file.exists()
 
     def test_load_default_system_prompt(self, prompt_loader: Any) -> None:
         """Test loading default system prompt."""
@@ -179,14 +175,11 @@ class TestPromptLoader:
         self, prompt_loader: Any, temp_dirs: dict[str, Any]
     ) -> None:
         """Test error when no prompt files are available."""
-        # Create a new prompt loader with non-existent files
+        # Create a new prompt loader with non-existent default file
         nonexistent_dir = temp_dirs["custom"] / "nonexistent"
         test_loader = PromptLoader()
-        # Replace all file paths with non-existent ones
-        test_loader.language_prompts = {
-            "en": nonexistent_dir / "nonexistent_en.md",
-            "ko": nonexistent_dir / "nonexistent_ko.md",
-        }
+        # Replace default file path with non-existent one
+        test_loader.default_prompt_file = nonexistent_dir / "nonexistent.md"
 
         with pytest.raises(RuntimeError, match="System prompt file not found"):
             test_loader.load_system_prompt()
@@ -221,20 +214,14 @@ class TestPromptLoader:
         assert created_path.parent.exists()
 
     def test_get_available_prompts_default_only(self, prompt_loader: Any) -> None:
-        """Test getting prompt info with language-specific prompts only."""
+        """Test getting prompt info with default prompt only."""
         info = prompt_loader.get_available_prompts()
 
         assert "current_prompt_path" in info
         assert info["current_prompt_exists"] is True
-        assert "current_language" in info
-        assert "available_languages" in info
         # Should not have env variables set when no env vars are provided
         assert info.get("env_prompt_path") is None
         assert info.get("env_file_path") is None
-        # Should have language info
-        assert info["current_language"] == "en"
-        assert "en" in info["available_languages"]
-        assert "ko" in info["available_languages"]
 
     def test_get_available_prompts_with_env_vars(
         self, prompt_loader: Any, temp_dirs: dict[str, Any]
@@ -297,7 +284,6 @@ class TestPromptLoader:
                 path = prompt_loader._resolve_prompt_path()
                 assert path == temp_dirs["config"] / "config_file.txt"
 
-            # Test default fallback - should return language-specific (English default)
-            # Since we're not setting LANGUAGE env var, it should return English
+            # Test default fallback - should return default prompt file
             path = prompt_loader._resolve_prompt_path()
-            assert path == prompt_loader.language_prompts["en"]
+            assert path == prompt_loader.default_prompt_file

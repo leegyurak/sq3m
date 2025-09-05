@@ -40,8 +40,11 @@ class TestSQLGenerator:
 
         # Assert
         assert result == sample_sql_query
+        # Updated to match new signature with conversation_history parameter
         mock_llm_service.generate_sql.assert_called_once_with(
-            "Show all users", sample_tables
+            "Show all users",
+            sample_tables,
+            None,  # conversation_history is None when no history available
         )
 
     def test_execute_sql(
@@ -83,8 +86,11 @@ class TestSQLGenerator:
         # Assert
         assert sql_query == sample_sql_query
         assert results == expected_results
+        # Updated to match new signature with conversation_history parameter
         mock_llm_service.generate_sql.assert_called_once_with(
-            "Show all users", sample_tables
+            "Show all users",
+            sample_tables,
+            None,  # conversation_history is None when no history available
         )
         mock_database_repository.execute_query.assert_called_once_with(
             "SELECT * FROM users"

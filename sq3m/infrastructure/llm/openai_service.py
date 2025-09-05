@@ -124,7 +124,12 @@ Always provide accurate, efficient SQL queries and clear explanations."""
         except Exception as e:
             return f"Could not infer purpose for table {table.name}: {str(e)}"
 
-    def generate_sql(self, natural_language: str, tables: list[Table]) -> SQLQuery:
+    def generate_sql(
+        self,
+        natural_language: str,
+        tables: list[Table],
+        conversation_history: str | None = None,
+    ) -> SQLQuery:
         schema_info: list[str] = []
         for table in tables:
             table_info = f"\n{'=' * 50}\nTable: {table.name}"
@@ -226,19 +231,45 @@ Always provide accurate, efficient SQL queries and clear explanations."""
 
         schema_context = "\n".join(schema_info)
 
+        # Enhanced prompt with conversation history
         prompt = f"""
         Given the following database schema, convert the natural language query to SQL:
 
         DATABASE SCHEMA:
         {schema_context}
+        """
 
-        NATURAL LANGUAGE QUERY:
+        # Add conversation history if available
+        if conversation_history and conversation_history.strip():
+            prompt += f"""
+
+        PREVIOUS CONVERSATION CONTEXT:
+        The user has been asking questions about this database. Here are the recent questions and responses to help you understand the context and provide better answers:
+
+        {conversation_history}
+
+        Based on this conversation history, please consider:
+        1. Similar patterns or themes in the user's questions
+        2. Previously discussed tables, columns, or business logic
+        3. Any clarifications or corrections made in previous exchanges
+        4. The user's apparent level of SQL knowledge and preferred explanation style
+        """
+
+        prompt += f"""
+
+        CURRENT NATURAL LANGUAGE QUERY:
         {natural_language}
 
         Please provide:
         1. A valid SQL query that answers the natural language question
         2. A brief explanation of what the query does
         3. A confidence score (0-100) indicating how certain you are about the query
+
+        When there's conversation history:
+        - Reference previous queries or patterns when relevant
+        - Build upon previously established understanding
+        - Use consistent naming conventions and query styles from the conversation
+        - If the current question seems related to previous ones, mention the connection
 
         Format your response as JSON:
         {{
@@ -398,7 +429,10 @@ Always provide accurate, efficient SQL queries and clear explanations."""
             )
 
     async def generate_sql_async(
-        self, natural_language: str, tables: list[Table]
+        self,
+        natural_language: str,
+        tables: list[Table],
+        conversation_history: str | None = None,
     ) -> SQLQuery:
         schema_info: list[str] = []
         for table in tables:
@@ -430,19 +464,45 @@ Always provide accurate, efficient SQL queries and clear explanations."""
 
         schema_context = "\n".join(schema_info)
 
+        # Enhanced prompt with conversation history (similar to sync method)
         prompt = f"""
         Given the following database schema, convert the natural language query to SQL:
 
         DATABASE SCHEMA:
         {schema_context}
+        """
 
-        NATURAL LANGUAGE QUERY:
+        # Add conversation history if available
+        if conversation_history and conversation_history.strip():
+            prompt += f"""
+
+        PREVIOUS CONVERSATION CONTEXT:
+        The user has been asking questions about this database. Here are the recent questions and responses to help you understand the context and provide better answers:
+
+        {conversation_history}
+
+        Based on this conversation history, please consider:
+        1. Similar patterns or themes in the user's questions
+        2. Previously discussed tables, columns, or business logic
+        3. Any clarifications or corrections made in previous exchanges
+        4. The user's apparent level of SQL knowledge and preferred explanation style
+        """
+
+        prompt += f"""
+
+        CURRENT NATURAL LANGUAGE QUERY:
         {natural_language}
 
         Please provide:
         1. A valid SQL query that answers the natural language question
         2. A brief explanation of what the query does
         3. A confidence score (0-100) indicating how certain you are about the query
+
+        When there's conversation history:
+        - Reference previous queries or patterns when relevant
+        - Build upon previously established understanding
+        - Use consistent naming conventions and query styles from the conversation
+        - If the current question seems related to previous ones, mention the connection
 
         Format your response as JSON:
         {{

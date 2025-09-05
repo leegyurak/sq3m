@@ -23,7 +23,11 @@ class SQLGenerator:
         self.history = history or MarkdownHistory()
 
     def generate_sql(self, natural_language: str, tables: list[Table]) -> SQLQuery:
-        return self.llm_service.generate_sql(natural_language, tables)
+        # Get recent conversation history to provide context
+        conversation_history = self._get_recent_conversation_history()
+        return self.llm_service.generate_sql(
+            natural_language, tables, conversation_history
+        )
 
     def execute_sql(self, sql: str) -> list[dict[str, Any]]:
         return self.database_repository.execute_query(sql)
@@ -49,8 +53,11 @@ class SQLGenerator:
         while attempt <= max_retries:
             # Generate SQL query
             if attempt == 0:
-                # First attempt: normal generation
-                sql_query = self.generate_sql(natural_language, tables)
+                # First attempt: normal generation with conversation history
+                conversation_history = self._get_recent_conversation_history()
+                sql_query = self.llm_service.generate_sql(
+                    natural_language, tables, conversation_history
+                )
             else:
                 # Retry attempt: use error feedback
                 if sql_query is not None and sql_query.sql:
@@ -102,6 +109,62 @@ class SQLGenerator:
         self._log_to_history(natural_language, sql_query, results, max_retries)
 
         return sql_query, results
+
+    def _get_recent_conversation_history(self, max_entries: int = 3) -> str | None:
+        """Get recent conversation history to provide context for the current query."""
+        try:
+            # Get current session content synchronously
+            current_session = self.history.get_current_session_info()
+            if not current_session.get("active", False) or not current_session.get(
+                "path"
+            ):
+                return None
+
+            session_file = current_session["path"]
+            if not session_file.exists():
+                return None
+
+            # Read the session file content
+            content = session_file.read_text(encoding="utf-8")
+
+            # Extract recent Q&A entries
+            lines = content.split("\n")
+            qa_sections = []
+            current_section: list[str] = []
+            in_qa_section = False
+
+            for line in lines:
+                if line.strip().startswith("## Q&A Session"):
+                    if current_section and in_qa_section:
+                        qa_sections.append("\n".join(current_section))
+                    current_section = [line]
+                    in_qa_section = True
+                elif line.strip() == "---" and in_qa_section:
+                    if current_section:
+                        qa_sections.append("\n".join(current_section))
+                    current_section = []
+                    in_qa_section = False
+                elif in_qa_section:
+                    current_section.append(line)
+
+            # Add final section if exists
+            if current_section and in_qa_section:
+                qa_sections.append("\n".join(current_section))
+
+            # Return the most recent entries (up to max_entries)
+            if qa_sections:
+                recent_sections = (
+                    qa_sections[-max_entries:]
+                    if len(qa_sections) > max_entries
+                    else qa_sections
+                )
+                return "\n\n".join(recent_sections)
+
+            return None
+
+        except Exception:
+            # If there's any error reading history, return None to continue without context
+            return None
 
     def _log_to_history(
         self,

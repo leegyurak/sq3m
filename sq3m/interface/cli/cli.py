@@ -24,7 +24,7 @@ class CLI:
     def run(self) -> None:
         self.console.print(
             Panel.fit(
-                "🤖 sq3m - AI-Powered Database Query Assistant", style="bold blue"
+                "🤖 SQ3M - AI-Powered Database Query Assistant", style="bold blue"
             )
         )
 
@@ -54,7 +54,9 @@ class CLI:
 
         try:
             llm_service = OpenAIService(api_key, model)
-            self.database_service = DatabaseService(llm_service)
+            self.database_service = DatabaseService(
+                llm_service, api_key
+            )  # Pass API key for hybrid search
             self.console.print("✅ LLM service initialized", style="green")
             return True
         except Exception as e:

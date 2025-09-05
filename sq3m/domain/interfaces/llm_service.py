@@ -17,12 +17,20 @@ class LLMService(ABC):
         pass
 
     @abstractmethod
-    def generate_sql(self, natural_language: str, tables: list[Table]) -> SQLQuery:
+    def generate_sql(
+        self,
+        natural_language: str,
+        tables: list[Table],
+        conversation_history: str | None = None,
+    ) -> SQLQuery:
         pass
 
     @abstractmethod
     async def generate_sql_async(
-        self, natural_language: str, tables: list[Table]
+        self,
+        natural_language: str,
+        tables: list[Table],
+        conversation_history: str | None = None,
     ) -> SQLQuery:
         pass
 
