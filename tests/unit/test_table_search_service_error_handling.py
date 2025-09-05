@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import Mock, patch
 
 from sq3m.application.services.table_search_service import TableSearchService
@@ -13,7 +14,7 @@ from sq3m.infrastructure.llm.embedding_service import EmbeddingServiceError
 class TestTableSearchServiceErrorHandling:
     """Test cases for table search service error handling."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.api_key = "test-api-key"
         self.mock_repository = Mock()
@@ -31,8 +32,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sys.exit")
     @patch("builtins.print")
     def test_store_table_summaries_api_error_exits(
-        self, mock_print, mock_exit, mock_embedding_service_class
-    ):
+        self, mock_print: Any, mock_exit: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that API errors during table summary storage cause program to exit."""
         # Mock embedding service to raise EmbeddingServiceError
         mock_embedding_service = Mock()
@@ -65,8 +66,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sys.exit")
     @patch("builtins.print")
     def test_store_table_summaries_unexpected_error_exits(
-        self, mock_print, mock_exit, mock_embedding_service_class
-    ):
+        self, mock_print: Any, mock_exit: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that unexpected errors during table summary storage cause program to exit."""
         # Mock embedding service to raise unexpected exception
         mock_embedding_service = Mock()
@@ -101,8 +102,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     @patch("builtins.print")
     def test_store_table_summaries_success_no_exit(
-        self, mock_print, mock_embedding_service_class
-    ):
+        self, mock_print: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that successful embedding generation does not cause program to exit."""
         # Mock successful embedding service
         mock_embedding_service = Mock()
@@ -134,8 +135,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     @patch("builtins.print")
     def test_search_relevant_tables_embedding_error_fallback(
-        self, mock_print, mock_embedding_service_class
-    ):
+        self, mock_print: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that search falls back to keyword search when embedding generation fails."""
         # Mock embedding service to fail on query embedding
         mock_embedding_service = Mock()
@@ -178,8 +179,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     @patch("builtins.print")
     def test_search_relevant_tables_unexpected_error_fallback(
-        self, mock_print, mock_embedding_service_class
-    ):
+        self, mock_print: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that search falls back to keyword search on unexpected errors."""
         # Mock embedding service to raise unexpected error
         mock_embedding_service = Mock()
@@ -221,8 +222,8 @@ class TestTableSearchServiceErrorHandling:
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     def test_search_relevant_tables_success_no_fallback(
-        self, mock_embedding_service_class
-    ):
+        self, mock_embedding_service_class: Any
+    ) -> None:
         """Test that successful search does not trigger fallback."""
         # Mock successful embedding service
         mock_embedding_service = Mock()
@@ -257,8 +258,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     @patch("sys.exit")
     def test_multiple_tables_one_failure_exits(
-        self, mock_exit, mock_embedding_service_class
-    ):
+        self, mock_exit: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that failure with multiple tables still exits the program."""
         # Mock embedding service to fail
         mock_embedding_service = Mock()
@@ -286,8 +287,8 @@ class TestTableSearchServiceErrorHandling:
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     def test_get_tables_for_query_search_failure_fallback(
-        self, mock_embedding_service_class
-    ):
+        self, mock_embedding_service_class: Any
+    ) -> None:
         """Test that get_tables_for_query falls back to all tables when search fails."""
         # Mock embedding service to fail
         mock_embedding_service = Mock()
@@ -319,8 +320,8 @@ class TestTableSearchServiceErrorHandling:
     @patch("sys.exit")
     @patch("builtins.print")
     def test_error_message_formatting(
-        self, mock_print, mock_exit, mock_embedding_service_class
-    ):
+        self, mock_print: Any, mock_exit: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that error messages are properly formatted."""
         # Mock embedding service with specific error
         mock_embedding_service = Mock()

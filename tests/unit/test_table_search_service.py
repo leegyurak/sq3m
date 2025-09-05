@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import Mock, patch
 
 from sq3m.application.services.table_search_service import TableSearchService
@@ -12,7 +13,7 @@ from sq3m.domain.entities.table_summary import SearchResult, TableSummary
 class TestTableSearchService:
     """Test cases for TableSearchService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.api_key = "test-api-key"
         self.mock_repository = Mock()
@@ -21,7 +22,7 @@ class TestTableSearchService:
         )
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
-    def test_initialization_default(self, mock_embedding_service):
+    def test_initialization_default(self, mock_embedding_service: Any) -> None:
         """Test service initialization with defaults."""
         service = TableSearchService("test-key")
 
@@ -31,7 +32,7 @@ class TestTableSearchService:
         assert not service._initialized
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
-    def test_initialization_custom_params(self, mock_embedding_service):
+    def test_initialization_custom_params(self, mock_embedding_service: Any) -> None:
         """Test service initialization with custom parameters."""
         mock_repo = Mock()
         service = TableSearchService(
@@ -44,14 +45,14 @@ class TestTableSearchService:
         mock_embedding_service.assert_called_once_with("test-key", "custom-model")
         assert service.search_repository == mock_repo
 
-    def test_initialize(self):
+    def test_initialize(self) -> None:
         """Test service initialization."""
         self.service.initialize()
 
         self.mock_repository.initialize_storage.assert_called_once()
         assert self.service._initialized
 
-    def test_initialize_once(self):
+    def test_initialize_once(self) -> None:
         """Test that initialize only runs once."""
         self.service.initialize()
         self.service.initialize()
@@ -59,7 +60,7 @@ class TestTableSearchService:
         # Should only be called once
         assert self.mock_repository.initialize_storage.call_count == 1
 
-    def test_create_table_summary_complete(self):
+    def test_create_table_summary_complete(self) -> None:
         """Test creating table summary with complete table information."""
         columns = [
             Column("id", "int", False, True, comment="Primary key"),
@@ -91,7 +92,7 @@ class TestTableSearchService:
         assert "id (int) [PK] - Primary key" in summary.summary
         assert "Sample data context" in summary.summary
 
-    def test_create_table_summary_minimal(self):
+    def test_create_table_summary_minimal(self) -> None:
         """Test creating table summary with minimal table information."""
         columns = [Column("data", "json", True, False)]
         table = Table(name="temp", columns=columns, indexes=[])
@@ -103,7 +104,7 @@ class TestTableSearchService:
         assert "Table: temp" in summary.summary
         assert "data (json)" in summary.summary
 
-    def test_extract_sample_context(self):
+    def test_extract_sample_context(self) -> None:
         """Test extracting context from sample data."""
         sample_rows = [
             {"id": 1, "name": "test", "value": 100},
@@ -115,15 +116,15 @@ class TestTableSearchService:
         assert "contains columns: id, name, value" in context
         assert "has 2 sample rows" in context
 
-    def test_extract_sample_context_empty(self):
+    def test_extract_sample_context_empty(self) -> None:
         """Test extracting context from empty sample data."""
         context = self.service._extract_sample_context([])
         assert context == ""
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     def test_store_table_summaries_with_embeddings_success(
-        self, mock_embedding_service_class
-    ):
+        self, mock_embedding_service_class: Any
+    ) -> None:
         """Test successful storage of table summaries with embeddings."""
         # Mock embedding service
         mock_embedding_service = Mock()
@@ -155,8 +156,8 @@ class TestTableSearchService:
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     @patch("sys.exit")
     def test_store_table_summaries_embedding_failure(
-        self, mock_exit, mock_embedding_service_class
-    ):
+        self, mock_exit: Any, mock_embedding_service_class: Any
+    ) -> None:
         """Test that embedding generation failures cause program to exit."""
         mock_embedding_service = Mock()
         mock_embedding_service_class.return_value = mock_embedding_service
@@ -175,7 +176,9 @@ class TestTableSearchService:
         mock_exit.assert_called_once_with(1)
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
-    def test_search_relevant_tables_success(self, mock_embedding_service_class):
+    def test_search_relevant_tables_success(
+        self, mock_embedding_service_class: Any
+    ) -> None:
         """Test successful table search."""
         mock_embedding_service = Mock()
         mock_embedding_service_class.return_value = mock_embedding_service
@@ -202,8 +205,8 @@ class TestTableSearchService:
 
     @patch("sq3m.application.services.table_search_service.EmbeddingService")
     def test_search_relevant_tables_embedding_failure(
-        self, mock_embedding_service_class
-    ):
+        self, mock_embedding_service_class: Any
+    ) -> None:
         """Test table search fallback when embedding generation fails."""
         mock_embedding_service = Mock()
         mock_embedding_service_class.return_value = mock_embedding_service
@@ -226,7 +229,7 @@ class TestTableSearchService:
             "find users", 5
         )
 
-    def test_get_tables_for_query_success(self):
+    def test_get_tables_for_query_success(self) -> None:
         """Test getting tables for query with successful search."""
         # Mock search results
         mock_search_results = [
@@ -254,7 +257,7 @@ class TestTableSearchService:
         assert result_tables[1].name == "profiles"
         assert result_tables[2].name == "orders"  # Filled from remaining tables
 
-    def test_get_tables_for_query_no_results(self):
+    def test_get_tables_for_query_no_results(self) -> None:
         """Test getting tables when search returns no results."""
         all_tables = [
             Table("table1", [], []),
@@ -270,7 +273,7 @@ class TestTableSearchService:
         assert len(result_tables) == 2
         assert result_tables == all_tables
 
-    def test_get_tables_for_query_search_failure(self):
+    def test_get_tables_for_query_search_failure(self) -> None:
         """Test getting tables when search fails completely."""
         all_tables = [Table("table1", [], [])]
 
@@ -286,14 +289,14 @@ class TestTableSearchService:
         # Should fallback to all tables
         assert result_tables == all_tables
 
-    def test_clear_storage(self):
+    def test_clear_storage(self) -> None:
         """Test clearing storage."""
         self.service.clear_storage()
 
         self.mock_repository.initialize_storage.assert_called_once()
         self.mock_repository.clear_table_summaries.assert_called_once()
 
-    def test_get_all_summaries(self):
+    def test_get_all_summaries(self) -> None:
         """Test getting all summaries."""
         mock_summaries = [
             TableSummary("table1", "Summary 1"),
@@ -307,7 +310,7 @@ class TestTableSearchService:
         self.mock_repository.initialize_storage.assert_called_once()
         self.mock_repository.get_all_table_summaries.assert_called_once()
 
-    def test_search_with_custom_weights(self):
+    def test_search_with_custom_weights(self) -> None:
         """Test search with custom vector/keyword weights."""
         with patch.object(
             self.service.embedding_service,

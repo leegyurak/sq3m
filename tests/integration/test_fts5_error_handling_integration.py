@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import Mock, patch
 
 from sq3m.application.services.table_search_service import TableSearchService
@@ -16,7 +17,7 @@ from sq3m.infrastructure.database.sqlite_table_search_repository import (
 class TestFTS5ErrorHandlingIntegration:
     """Integration tests for FTS5 error handling scenarios."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures with real SQLite database."""
         import os
 
@@ -24,7 +25,7 @@ class TestFTS5ErrorHandlingIntegration:
         os.close(fd)  # Close the file descriptor immediately
         self.api_key = "test-api-key"
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         """Clean up test fixtures."""
         Path(self.db_path).unlink(missing_ok=True)
 
@@ -77,7 +78,7 @@ class TestFTS5ErrorHandlingIntegration:
         ]
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_problematic_query_handling(self, mock_openai):
+    def test_problematic_query_handling(self, mock_openai: Any) -> None:
         """Test that problematic queries with FTS5 syntax issues are handled gracefully."""
         # Mock successful OpenAI client
         mock_client = Mock()
@@ -134,7 +135,7 @@ class TestFTS5ErrorHandlingIntegration:
                     ) from e
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_get_tables_for_query_with_fts5_errors(self, mock_openai):
+    def test_get_tables_for_query_with_fts5_errors(self, mock_openai: Any) -> None:
         """Test that get_tables_for_query method handles FTS5 errors gracefully."""
         # Mock successful OpenAI client
         mock_client = Mock()
@@ -176,7 +177,7 @@ class TestFTS5ErrorHandlingIntegration:
                 raise AssertionError(f"FTS5 syntax error not handled: {e}") from e
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_search_fallback_mechanism(self, mock_openai):
+    def test_search_fallback_mechanism(self, mock_openai: Any) -> None:
         """Test that search falls back to LIKE queries when FTS5 fails completely."""
         # Mock successful OpenAI for embeddings
         mock_client = Mock()
@@ -207,7 +208,7 @@ class TestFTS5ErrorHandlingIntegration:
                 assert result.search_type in ["keyword", "keyword_fallback"]
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_hybrid_search_resilience(self, mock_openai):
+    def test_hybrid_search_resilience(self, mock_openai: Any) -> None:
         """Test that hybrid search is resilient to FTS5 errors."""
         # Mock successful OpenAI client
         mock_client = Mock()
@@ -243,7 +244,7 @@ class TestFTS5ErrorHandlingIntegration:
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
     @patch("builtins.print")
-    def test_error_logging(self, mock_print, mock_openai):
+    def test_error_logging(self, mock_print: Any, mock_openai: Any) -> None:
         """Test that FTS5 errors are properly logged."""
         # Mock successful OpenAI client
         mock_client = Mock()
@@ -276,7 +277,7 @@ class TestFTS5ErrorHandlingIntegration:
         # The important thing is that it didn't crash
         assert True  # Test passes if we reach this point without exception
 
-    def test_direct_repository_sanitization(self):
+    def test_direct_repository_sanitization(self) -> None:
         """Test repository sanitization methods directly."""
         repository = SQLiteTableSearchRepository(self.db_path)
         repository.initialize_storage()
@@ -299,7 +300,7 @@ class TestFTS5ErrorHandlingIntegration:
             fallback_results = repository._fallback_keyword_search(query, limit=5)
             assert isinstance(fallback_results, list)
 
-    def test_repository_state_after_errors(self):
+    def test_repository_state_after_errors(self) -> None:
         """Test that repository maintains consistent state after FTS5 errors."""
         repository = SQLiteTableSearchRepository(self.db_path)
         repository.initialize_storage()

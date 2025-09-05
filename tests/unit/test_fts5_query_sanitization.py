@@ -14,7 +14,7 @@ from sq3m.infrastructure.database.sqlite_table_search_repository import (
 class TestFTS5QuerySanitization:
     """Focused unit tests for FTS5 query sanitization."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         import os
 
@@ -22,13 +22,13 @@ class TestFTS5QuerySanitization:
         os.close(fd)  # Close the file descriptor immediately
         self.repository = SQLiteTableSearchRepository(self.db_path)
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         """Clean up test fixtures."""
         if self.repository.connection:
             self.repository.connection.close()
         Path(self.db_path).unlink(missing_ok=True)
 
-    def test_sanitize_user_original_query(self):
+    def test_sanitize_user_original_query(self) -> None:
         """Test sanitization of the original user query that caused the error."""
         query = "특정 encounter의 location, practitioner, department의 이력을 최신 10개만 보여주는 쿼리를 작성해주세요"
 
@@ -61,7 +61,7 @@ class TestFTS5QuerySanitization:
             assert sanitized.startswith('"')
             assert sanitized.endswith('"')
 
-    def test_sanitize_special_characters(self):
+    def test_sanitize_special_characters(self) -> None:
         """Test handling of various special characters."""
         test_cases = [
             # Commas (the original issue)
@@ -88,7 +88,7 @@ class TestFTS5QuerySanitization:
                     f"Expected word '{word}' not found in sanitized query: {sanitized}"
                 )
 
-    def test_sanitize_edge_cases(self):
+    def test_sanitize_edge_cases(self) -> None:
         """Test edge cases in query sanitization."""
         edge_cases = [
             # Empty string
@@ -124,7 +124,7 @@ class TestFTS5QuerySanitization:
                 # Just ensure it doesn't crash and returns a string
                 assert isinstance(sanitized, str)
 
-    def test_word_limit_enforcement(self):
+    def test_word_limit_enforcement(self) -> None:
         """Test that word limit is properly enforced."""
         # Create a query with exactly 10 words
         ten_words = "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10"
@@ -138,7 +138,7 @@ class TestFTS5QuerySanitization:
         word_count = sanitized.count(" OR ") + 1 if sanitized else 0
         assert word_count == 10
 
-    def test_korean_word_extraction(self):
+    def test_korean_word_extraction(self) -> None:
         """Test extraction of Korean words specifically."""
         korean_test_cases = [
             ("한글 단어 테스트", ["한글", "단어", "테스트"]),
@@ -156,7 +156,7 @@ class TestFTS5QuerySanitization:
                     f"Korean word '{word}' not found in: {sanitized}"
                 )
 
-    def test_fallback_search_keyword_extraction(self):
+    def test_fallback_search_keyword_extraction(self) -> None:
         """Test keyword extraction in fallback search."""
         self.repository.initialize_storage()
 
@@ -197,7 +197,7 @@ class TestFTS5QuerySanitization:
             if expected_keywords and any(len(k) > 1 for k in expected_keywords):
                 assert matches_found or len(results) > 0
 
-    def test_regex_patterns(self):
+    def test_regex_patterns(self) -> None:
         """Test the regex patterns used for word extraction."""
         import re
 
@@ -219,7 +219,7 @@ class TestFTS5QuerySanitization:
         assert "123" not in matches
         assert "@" not in matches
 
-    def test_quote_escaping_fallback(self):
+    def test_quote_escaping_fallback(self) -> None:
         """Test quote escaping in fallback scenarios."""
         test_cases = [
             ('query with "double quotes"', 'query with ""double quotes""'),
@@ -235,7 +235,7 @@ class TestFTS5QuerySanitization:
             escaped = input_query.replace('"', '""').replace("'", "''")
             assert escaped == expected_escaped
 
-    def test_performance_with_long_queries(self):
+    def test_performance_with_long_queries(self) -> None:
         """Test performance with very long queries."""
         # Create a very long query
         long_query = " ".join([f"word{i}" for i in range(1000)])
@@ -253,7 +253,7 @@ class TestFTS5QuerySanitization:
         # Should not contain later words
         assert "word50" not in sanitized
 
-    def test_unicode_handling(self):
+    def test_unicode_handling(self) -> None:
         """Test handling of various Unicode characters."""
         unicode_test_cases = [
             # Various Unicode spaces

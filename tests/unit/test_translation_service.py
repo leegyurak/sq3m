@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import Mock, patch
 
 from sq3m.infrastructure.llm.translation_service import TranslationService
@@ -10,17 +11,17 @@ from sq3m.infrastructure.llm.translation_service import TranslationService
 class TestTranslationService:
     """Test cases for TranslationService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.api_key = "test-api-key"
         self.translation_service = TranslationService(self.api_key)
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test TranslationService initialization."""
         assert self.translation_service.api_key == self.api_key
         assert self.translation_service.model == "gpt-3.5-turbo"
 
-    def test_is_english_query_english_text(self):
+    def test_is_english_query_english_text(self) -> None:
         """Test English query detection with English text."""
         english_queries = [
             "Show all users",
@@ -37,7 +38,7 @@ class TestTranslationService:
                 f"Failed for: {query}"
             )
 
-    def test_is_english_query_korean_text(self):
+    def test_is_english_query_korean_text(self) -> None:
         """Test English query detection with Korean text."""
         korean_queries = [
             "모든 사용자를 보여주세요",
@@ -52,7 +53,7 @@ class TestTranslationService:
                 f"Failed for: {query}"
             )
 
-    def test_is_english_query_mixed_text(self):
+    def test_is_english_query_mixed_text(self) -> None:
         """Test English query detection with mixed language text."""
         # Mixed queries with significant English should be considered English
         mixed_english = [
@@ -66,7 +67,7 @@ class TestTranslationService:
             # These could go either way depending on the ratio, just ensure no crash
             assert isinstance(result, bool)
 
-    def test_is_english_query_edge_cases(self):
+    def test_is_english_query_edge_cases(self) -> None:
         """Test English query detection with edge cases."""
         edge_cases = [
             ("", True),  # Empty string
@@ -79,7 +80,7 @@ class TestTranslationService:
             assert self.translation_service.is_english_query(query) == expected
 
     @patch("sq3m.infrastructure.llm.translation_service.OpenAI")
-    def test_translate_to_english_korean(self, mock_openai):
+    def test_translate_to_english_korean(self, mock_openai: Any) -> None:
         """Test translation from Korean to English."""
         # Mock OpenAI response
         mock_client = Mock()
@@ -98,7 +99,7 @@ class TestTranslationService:
         mock_client.chat.completions.create.assert_called_once()
 
     @patch("sq3m.infrastructure.llm.translation_service.OpenAI")
-    def test_translate_to_english_already_english(self, mock_openai):
+    def test_translate_to_english_already_english(self, mock_openai: Any) -> None:
         """Test that English queries are not translated."""
         service = TranslationService(self.api_key)
 
@@ -111,7 +112,7 @@ class TestTranslationService:
         mock_openai.return_value.chat.completions.create.assert_not_called()
 
     @patch("sq3m.infrastructure.llm.translation_service.OpenAI")
-    def test_translate_to_english_api_error(self, mock_openai):
+    def test_translate_to_english_api_error(self, mock_openai: Any) -> None:
         """Test translation fallback when API fails."""
         # Mock OpenAI to raise an exception
         mock_client = Mock()
@@ -127,7 +128,7 @@ class TestTranslationService:
         assert result == original_query
 
     @patch("sq3m.infrastructure.llm.translation_service.OpenAI")
-    def test_translate_to_english_empty_response(self, mock_openai):
+    def test_translate_to_english_empty_response(self, mock_openai: Any) -> None:
         """Test translation fallback when API returns empty response."""
         # Mock OpenAI to return empty response
         mock_client = Mock()
@@ -146,7 +147,7 @@ class TestTranslationService:
         # Should return original query when response is empty
         assert result == original_query
 
-    def test_detect_language(self):
+    def test_detect_language(self) -> None:
         """Test language detection."""
         test_cases = [
             ("Show all users", "en"),
@@ -166,7 +167,7 @@ class TestTranslationService:
             )
 
     @patch("sq3m.infrastructure.llm.translation_service.OpenAI")
-    def test_translation_with_database_terms(self, mock_openai):
+    def test_translation_with_database_terms(self, mock_openai: Any) -> None:
         """Test translation preserves database-related terms."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -190,7 +191,7 @@ class TestTranslationService:
         call_args = mock_client.chat.completions.create.call_args
         assert "database" in call_args[1]["messages"][0]["content"].lower()
 
-    def test_english_detection_with_sql_keywords(self):
+    def test_english_detection_with_sql_keywords(self) -> None:
         """Test that queries with SQL keywords are detected as English."""
         sql_queries = [
             "SELECT * FROM users",
@@ -205,7 +206,7 @@ class TestTranslationService:
                 f"Failed for SQL: {query}"
             )
 
-    def test_non_english_with_english_keywords(self):
+    def test_non_english_with_english_keywords(self) -> None:
         """Test mixed language queries with English database keywords."""
         mixed_queries = [
             "users 테이블에서 모든 데이터를 SELECT해주세요",
@@ -220,7 +221,7 @@ class TestTranslationService:
             assert isinstance(result, bool)
 
     @patch("sq3m.infrastructure.llm.translation_service.OpenAI")
-    def test_translation_temperature_and_max_tokens(self, mock_openai):
+    def test_translation_temperature_and_max_tokens(self, mock_openai: Any) -> None:
         """Test that translation uses appropriate temperature and token limits."""
         mock_client = Mock()
         mock_openai.return_value = mock_client

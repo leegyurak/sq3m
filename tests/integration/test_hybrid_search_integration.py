@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import Mock, patch
 
 from sq3m.application.services.table_search_service import TableSearchService
@@ -17,7 +18,7 @@ from sq3m.infrastructure.database.sqlite_table_search_repository import (
 class TestHybridSearchIntegration:
     """Integration tests for the complete hybrid search pipeline."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures with real SQLite database."""
         import os
 
@@ -25,12 +26,12 @@ class TestHybridSearchIntegration:
         os.close(fd)  # Close the file descriptor immediately
         self.api_key = "test-api-key"
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         """Clean up test fixtures."""
         Path(self.db_path).unlink(missing_ok=True)
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_end_to_end_table_storage_and_search(self, mock_openai):
+    def test_end_to_end_table_storage_and_search(self, mock_openai: Any) -> None:
         """Test complete workflow from table storage to search."""
         # Mock OpenAI responses
         mock_client = Mock()
@@ -126,7 +127,7 @@ class TestHybridSearchIntegration:
         assert results[0].score >= results[1].score
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_hybrid_search_vs_keyword_only(self, mock_openai):
+    def test_hybrid_search_vs_keyword_only(self, mock_openai: Any) -> None:
         """Test that hybrid search provides better results than keyword-only."""
         # Mock OpenAI client
         mock_client = Mock()
@@ -194,7 +195,7 @@ class TestHybridSearchIntegration:
         assert len(hybrid_results) >= len(keyword_results)
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_search_with_table_filtering(self, mock_openai):
+    def test_search_with_table_filtering(self, mock_openai: Any) -> None:
         """Test integration with table filtering for LLM prompts."""
         # Mock OpenAI client
         mock_client = Mock()
@@ -270,7 +271,7 @@ class TestHybridSearchIntegration:
         # At least some of the top results should be user-related
         assert user_related_count > 0
 
-    def test_repository_persistence(self):
+    def test_repository_persistence(self) -> None:
         """Test that data persists between repository instances."""
         # Create and populate first repository instance
         repo1 = SQLiteTableSearchRepository(self.db_path)
@@ -297,7 +298,7 @@ class TestHybridSearchIntegration:
         assert all_summaries[0].embedding == [0.1, 0.2, 0.3, 0.4]
 
     @patch("sys.exit")
-    def test_error_recovery_and_fallbacks(self, mock_exit):
+    def test_error_recovery_and_fallbacks(self, mock_exit: Any) -> None:
         """Test system behavior when components fail."""
         repository = SQLiteTableSearchRepository(self.db_path)
 
@@ -328,7 +329,7 @@ class TestHybridSearchIntegration:
             mock_exit.assert_called_once_with(1)
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_large_dataset_performance(self, mock_openai):
+    def test_large_dataset_performance(self, mock_openai: Any) -> None:
         """Test system behavior with larger number of tables."""
         # Mock OpenAI client with batch embeddings
         mock_client = Mock()

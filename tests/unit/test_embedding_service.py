@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -16,13 +17,13 @@ from sq3m.infrastructure.llm.embedding_service import (
 class TestEmbeddingService:
     """Test cases for EmbeddingService."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.api_key = "test-api-key"
         self.service = EmbeddingService(self.api_key)
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_initialization(self, mock_openai):
+    def test_initialization(self, mock_openai: Any) -> None:
         """Test EmbeddingService initialization."""
         service = EmbeddingService("test-key", "test-model")
 
@@ -30,7 +31,7 @@ class TestEmbeddingService:
         assert service.model == "test-model"
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generate_embedding_success(self, mock_openai):
+    def test_generate_embedding_success(self, mock_openai: Any) -> None:
         """Test successful embedding generation."""
         # Mock the OpenAI client response
         mock_client = Mock()
@@ -49,7 +50,7 @@ class TestEmbeddingService:
         )
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generate_embedding_failure(self, mock_openai):
+    def test_generate_embedding_failure(self, mock_openai: Any) -> None:
         """Test embedding generation failure."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -65,7 +66,7 @@ class TestEmbeddingService:
             service.generate_embedding("test text")
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generate_embeddings_batch_success(self, mock_openai):
+    def test_generate_embeddings_batch_success(self, mock_openai: Any) -> None:
         """Test successful batch embedding generation."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -89,7 +90,7 @@ class TestEmbeddingService:
         )
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generate_embeddings_batch_failure(self, mock_openai):
+    def test_generate_embeddings_batch_failure(self, mock_openai: Any) -> None:
         """Test batch embedding generation failure."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -104,7 +105,7 @@ class TestEmbeddingService:
         ):
             service.generate_embeddings_batch(["text1", "text2"])
 
-    def test_create_table_summary_text_complete(self):
+    def test_create_table_summary_text_complete(self) -> None:
         """Test creating table summary text with all components."""
         service = EmbeddingService("test-key")
 
@@ -117,7 +118,7 @@ class TestEmbeddingService:
         expected = "Table: users | Purpose: Store user information | Schema: id (int), name (varchar), email (varchar)"
         assert result == expected
 
-    def test_create_table_summary_text_minimal(self):
+    def test_create_table_summary_text_minimal(self) -> None:
         """Test creating table summary text with minimal components."""
         service = EmbeddingService("test-key")
 
@@ -128,7 +129,7 @@ class TestEmbeddingService:
         expected = "Table: logs | Schema: timestamp (datetime), message (text)"
         assert result == expected
 
-    def test_create_table_summary_text_empty_purpose(self):
+    def test_create_table_summary_text_empty_purpose(self) -> None:
         """Test creating table summary text with empty purpose."""
         service = EmbeddingService("test-key")
 
@@ -138,7 +139,7 @@ class TestEmbeddingService:
         assert result == expected
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generate_table_summary_embedding_success(self, mock_openai):
+    def test_generate_table_summary_embedding_success(self, mock_openai: Any) -> None:
         """Test generating embedding for table summary."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -164,7 +165,7 @@ class TestEmbeddingService:
         )
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generate_table_summary_embedding_failure(self, mock_openai):
+    def test_generate_table_summary_embedding_failure(self, mock_openai: Any) -> None:
         """Test embedding generation failure for table summary."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -180,7 +181,7 @@ class TestEmbeddingService:
         ):
             service.generate_table_summary_embedding(table_summary)
 
-    def test_custom_model_initialization(self):
+    def test_custom_model_initialization(self) -> None:
         """Test EmbeddingService with custom model."""
         with patch("sq3m.infrastructure.llm.embedding_service.OpenAI"):
             service = EmbeddingService("test-key", "text-embedding-ada-002")

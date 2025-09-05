@@ -8,7 +8,7 @@ from sq3m.domain.entities.table_summary import SearchResult, TableSummary
 class TestTableSummary:
     """Test cases for TableSummary entity."""
 
-    def test_table_summary_creation(self):
+    def test_table_summary_creation(self) -> None:
         """Test basic TableSummary creation."""
         summary = TableSummary(
             table_name="users",
@@ -21,7 +21,7 @@ class TestTableSummary:
         assert summary.purpose == "Store user information"
         assert summary.embedding is None
 
-    def test_table_summary_with_embedding(self):
+    def test_table_summary_with_embedding(self) -> None:
         """Test TableSummary with embedding vector."""
         embedding = [0.1, -0.3, 0.8, 0.2]
         summary = TableSummary(
@@ -33,7 +33,7 @@ class TestTableSummary:
 
         assert summary.embedding == embedding
 
-    def test_table_summary_to_dict(self):
+    def test_table_summary_to_dict(self) -> None:
         """Test TableSummary to_dict conversion."""
         embedding = [0.1, -0.3, 0.8]
         summary = TableSummary(
@@ -54,7 +54,7 @@ class TestTableSummary:
 
         assert result == expected
 
-    def test_table_summary_from_dict(self):
+    def test_table_summary_from_dict(self) -> None:
         """Test TableSummary from_dict creation."""
         data = {
             "table_name": "categories",
@@ -70,7 +70,7 @@ class TestTableSummary:
         assert summary.purpose == "Store product categories"
         assert summary.embedding == [0.5, -0.2, 0.7]
 
-    def test_table_summary_from_dict_minimal(self):
+    def test_table_summary_from_dict_minimal(self) -> None:
         """Test TableSummary from_dict with minimal data."""
         data = {"table_name": "logs", "summary": "Application logs"}
 
@@ -85,7 +85,7 @@ class TestTableSummary:
 class TestSearchResult:
     """Test cases for SearchResult entity."""
 
-    def test_search_result_creation(self):
+    def test_search_result_creation(self) -> None:
         """Test SearchResult creation."""
         table_summary = TableSummary(
             table_name="users", summary="Users table", purpose="Store users"
@@ -99,7 +99,7 @@ class TestSearchResult:
         assert result.score == 0.85
         assert result.search_type == "hybrid"
 
-    def test_search_result_different_types(self):
+    def test_search_result_different_types(self) -> None:
         """Test SearchResult with different search types."""
         table_summary = TableSummary(table_name="orders", summary="Orders table")
 
@@ -111,7 +111,7 @@ class TestSearchResult:
         assert keyword_result.search_type == "keyword"
         assert hybrid_result.search_type == "hybrid"
 
-    def test_search_result_score_bounds(self):
+    def test_search_result_score_bounds(self) -> None:
         """Test SearchResult with various score values."""
         table_summary = TableSummary("test", "test summary")
 

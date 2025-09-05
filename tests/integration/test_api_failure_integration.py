@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import Mock, patch
 
 from openai import APIError
@@ -18,7 +19,7 @@ from sq3m.infrastructure.database.sqlite_table_search_repository import (
 class TestAPIFailureIntegration:
     """Integration tests for API failure scenarios."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures with real SQLite database."""
         import os
 
@@ -26,7 +27,7 @@ class TestAPIFailureIntegration:
         os.close(fd)  # Close the file descriptor immediately
         self.api_key = "test-api-key"
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         """Clean up test fixtures."""
         Path(self.db_path).unlink(missing_ok=True)
 
@@ -59,8 +60,8 @@ class TestAPIFailureIntegration:
     @patch("sys.exit")
     @patch("builtins.print")
     def test_api_401_unauthorized_terminates_program(
-        self, mock_print, mock_exit, mock_openai
-    ):
+        self, mock_print: Any, mock_exit: Any, mock_openai: Any
+    ) -> None:
         """Test that 401 Unauthorized API error terminates the program."""
         # Mock OpenAI client to raise 401 error
         mock_client = Mock()
@@ -93,8 +94,8 @@ class TestAPIFailureIntegration:
     @patch("sys.exit")
     @patch("builtins.print")
     def test_api_429_rate_limit_terminates_program(
-        self, mock_print, mock_exit, mock_openai
-    ):
+        self, mock_print: Any, mock_exit: Any, mock_openai: Any
+    ) -> None:
         """Test that 429 Rate Limit error terminates the program."""
         # Mock OpenAI client to raise rate limit error
         mock_client = Mock()
@@ -123,8 +124,8 @@ class TestAPIFailureIntegration:
     @patch("sys.exit")
     @patch("builtins.print")
     def test_api_500_server_error_terminates_program(
-        self, mock_print, mock_exit, mock_openai
-    ):
+        self, mock_print: Any, mock_exit: Any, mock_openai: Any
+    ) -> None:
         """Test that 500 Server Error terminates the program."""
         # Mock OpenAI client to raise server error
         mock_client = Mock()
@@ -151,7 +152,9 @@ class TestAPIFailureIntegration:
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
     @patch("builtins.print")
-    def test_successful_api_call_continues_normally(self, mock_print, mock_openai):
+    def test_successful_api_call_continues_normally(
+        self, mock_print: Any, mock_openai: Any
+    ) -> None:
         """Test that successful API calls allow the program to continue."""
         # Mock successful OpenAI client
         mock_client = Mock()
@@ -191,7 +194,9 @@ class TestAPIFailureIntegration:
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
     @patch("builtins.print")
-    def test_search_api_failure_fallback_to_keyword(self, mock_print, mock_openai):
+    def test_search_api_failure_fallback_to_keyword(
+        self, mock_print: Any, mock_openai: Any
+    ) -> None:
         """Test that search API failures fallback to keyword search without terminating."""
         # Mock OpenAI client
         mock_client = Mock()
@@ -242,7 +247,9 @@ class TestAPIFailureIntegration:
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
     @patch("sys.exit")
-    def test_partial_batch_failure_terminates_program(self, mock_exit, mock_openai):
+    def test_partial_batch_failure_terminates_program(
+        self, mock_exit: Any, mock_openai: Any
+    ) -> None:
         """Test that even partial failures in batch operations terminate the program."""
         # Mock OpenAI client to simulate partial batch failure
         mock_client = Mock()
@@ -276,8 +283,8 @@ class TestAPIFailureIntegration:
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
     @patch("sys.exit")
     def test_network_connection_failure_terminates_program(
-        self, mock_exit, mock_openai
-    ):
+        self, mock_exit: Any, mock_openai: Any
+    ) -> None:
         """Test that network connection failures terminate the program."""
         # Mock OpenAI client to raise connection error
         mock_client = Mock()
@@ -298,7 +305,7 @@ class TestAPIFailureIntegration:
         # Verify program termination
         mock_exit.assert_called_once_with(1)
 
-    def test_repository_continues_working_after_api_failure(self):
+    def test_repository_continues_working_after_api_failure(self) -> None:
         """Test that the SQLite repository continues working normally after API failures."""
         repository = SQLiteTableSearchRepository(self.db_path)
         repository.initialize_storage()

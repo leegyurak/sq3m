@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -15,12 +16,12 @@ from sq3m.infrastructure.llm.embedding_service import (
 class TestEmbeddingServiceErrorHandlingSimple:
     """Simple test cases for embedding service error handling."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures."""
         self.api_key = "test-api-key"
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_generic_exception_handling(self, mock_openai):
+    def test_generic_exception_handling(self, mock_openai: Any) -> None:
         """Test handling of generic exceptions."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -35,7 +36,7 @@ class TestEmbeddingServiceErrorHandlingSimple:
             service.generate_embedding("test text")
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_batch_generic_exception_handling(self, mock_openai):
+    def test_batch_generic_exception_handling(self, mock_openai: Any) -> None:
         """Test handling of generic exceptions in batch operations."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -53,7 +54,7 @@ class TestEmbeddingServiceErrorHandlingSimple:
             service.generate_embeddings_batch(["text1", "text2"])
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_successful_embedding_generation(self, mock_openai):
+    def test_successful_embedding_generation(self, mock_openai: Any) -> None:
         """Test that successful API calls work normally."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -68,7 +69,7 @@ class TestEmbeddingServiceErrorHandlingSimple:
         assert result == [0.1, 0.2, 0.3]
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
-    def test_successful_batch_embedding_generation(self, mock_openai):
+    def test_successful_batch_embedding_generation(self, mock_openai: Any) -> None:
         """Test that successful batch API calls work normally."""
         mock_client = Mock()
         mock_openai.return_value = mock_client
@@ -86,7 +87,7 @@ class TestEmbeddingServiceErrorHandlingSimple:
         expected = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
         assert result == expected
 
-    def test_embedding_service_error_inheritance(self):
+    def test_embedding_service_error_inheritance(self) -> None:
         """Test that EmbeddingServiceError is properly defined."""
         error = EmbeddingServiceError("Test error")
         assert isinstance(error, Exception)
@@ -94,7 +95,7 @@ class TestEmbeddingServiceErrorHandlingSimple:
 
     @patch("sq3m.infrastructure.llm.embedding_service.OpenAI")
     @patch("builtins.print")
-    def test_error_message_printing(self, mock_print, mock_openai):
+    def test_error_message_printing(self, mock_print: Any, mock_openai: Any) -> None:
         """Test that error messages are printed before raising exceptions."""
         mock_client = Mock()
         mock_openai.return_value = mock_client

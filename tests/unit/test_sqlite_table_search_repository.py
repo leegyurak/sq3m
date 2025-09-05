@@ -16,7 +16,7 @@ from sq3m.infrastructure.database.sqlite_table_search_repository import (
 class TestSQLiteTableSearchRepository:
     """Test cases for SQLiteTableSearchRepository."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test fixtures with temporary database."""
         import os
 
@@ -24,18 +24,18 @@ class TestSQLiteTableSearchRepository:
         os.close(fd)  # Close the file descriptor immediately
         self.repository = SQLiteTableSearchRepository(self.db_path)
 
-    def teardown_method(self):
+    def teardown_method(self) -> None:
         """Clean up test fixtures."""
         if self.repository.connection:
             self.repository.connection.close()
         Path(self.db_path).unlink(missing_ok=True)
 
-    def test_initialization(self):
+    def test_initialization(self) -> None:
         """Test repository initialization."""
         assert self.repository.db_path == self.db_path
         assert self.repository.connection is None
 
-    def test_get_connection(self):
+    def test_get_connection(self) -> None:
         """Test database connection creation."""
         conn = self.repository._get_connection()
 
@@ -43,7 +43,7 @@ class TestSQLiteTableSearchRepository:
         assert isinstance(conn, sqlite3.Connection)
         assert self.repository.connection is conn
 
-    def test_initialize_storage(self):
+    def test_initialize_storage(self) -> None:
         """Test storage initialization creates tables and triggers."""
         self.repository.initialize_storage()
 
@@ -64,7 +64,7 @@ class TestSQLiteTableSearchRepository:
         """)
         assert cursor.fetchone() is not None
 
-    def test_store_table_summary(self):
+    def test_store_table_summary(self) -> None:
         """Test storing a single table summary."""
         self.repository.initialize_storage()
 
@@ -90,7 +90,7 @@ class TestSQLiteTableSearchRepository:
         assert row["purpose"] == "Store user data"
         assert json.loads(row["embedding"]) == embedding
 
-    def test_store_table_summary_without_embedding(self):
+    def test_store_table_summary_without_embedding(self) -> None:
         """Test storing table summary without embedding."""
         self.repository.initialize_storage()
 
@@ -106,7 +106,7 @@ class TestSQLiteTableSearchRepository:
         assert row is not None
         assert row["embedding"] is None
 
-    def test_store_table_summaries_batch(self):
+    def test_store_table_summaries_batch(self) -> None:
         """Test storing multiple table summaries."""
         self.repository.initialize_storage()
 
@@ -126,7 +126,7 @@ class TestSQLiteTableSearchRepository:
 
         assert count == 3
 
-    def test_cosine_similarity_calculation(self):
+    def test_cosine_similarity_calculation(self) -> None:
         """Test cosine similarity calculation."""
         vec1 = [1.0, 0.0, 0.0]
         vec2 = [1.0, 0.0, 0.0]
@@ -138,7 +138,7 @@ class TestSQLiteTableSearchRepository:
         similarity = self.repository._cosine_similarity(vec3, vec4)
         assert abs(similarity - 0.0) < 0.001
 
-    def test_cosine_similarity_edge_cases(self):
+    def test_cosine_similarity_edge_cases(self) -> None:
         """Test cosine similarity edge cases."""
         # Empty vectors
         assert self.repository._cosine_similarity([], []) == 0.0
@@ -149,7 +149,7 @@ class TestSQLiteTableSearchRepository:
         # Zero magnitude
         assert self.repository._cosine_similarity([0, 0], [1, 1]) == 0.0
 
-    def test_search_tables_vector(self):
+    def test_search_tables_vector(self) -> None:
         """Test vector-only search."""
         self.repository.initialize_storage()
 
@@ -170,7 +170,7 @@ class TestSQLiteTableSearchRepository:
         assert results[0].search_type == "vector"
         assert results[0].score > results[1].score
 
-    def test_search_tables_keyword(self):
+    def test_search_tables_keyword(self) -> None:
         """Test keyword-only search."""
         self.repository.initialize_storage()
 
@@ -191,7 +191,7 @@ class TestSQLiteTableSearchRepository:
             assert "user" in result.table_summary.summary.lower()
             assert result.search_type == "keyword"
 
-    def test_search_tables_hybrid(self):
+    def test_search_tables_hybrid(self) -> None:
         """Test hybrid search combining vector and keyword."""
         self.repository.initialize_storage()
 
@@ -213,7 +213,7 @@ class TestSQLiteTableSearchRepository:
             assert result.search_type == "hybrid"
             assert isinstance(result.score, float)
 
-    def test_reciprocal_rank_fusion(self):
+    def test_reciprocal_rank_fusion(self) -> None:
         """Test RRF algorithm implementation."""
         # Create mock results
         vector_results = [
@@ -238,7 +238,7 @@ class TestSQLiteTableSearchRepository:
         )
         assert table2_result.search_type == "hybrid"
 
-    def test_get_all_table_summaries(self):
+    def test_get_all_table_summaries(self) -> None:
         """Test retrieving all stored summaries."""
         self.repository.initialize_storage()
 
@@ -254,7 +254,7 @@ class TestSQLiteTableSearchRepository:
         table_names = {s.table_name for s in all_summaries}
         assert table_names == {"users", "orders"}
 
-    def test_clear_table_summaries(self):
+    def test_clear_table_summaries(self) -> None:
         """Test clearing all stored summaries."""
         self.repository.initialize_storage()
 
@@ -271,7 +271,7 @@ class TestSQLiteTableSearchRepository:
         all_summaries = self.repository.get_all_table_summaries()
         assert len(all_summaries) == 0
 
-    def test_malformed_embedding_handling(self):
+    def test_malformed_embedding_handling(self) -> None:
         """Test handling of malformed embedding data."""
         self.repository.initialize_storage()
 
@@ -291,7 +291,7 @@ class TestSQLiteTableSearchRepository:
         results = self.repository.search_tables_vector([0.1, 0.2], limit=5)
         assert len(results) == 0  # No valid embeddings to search
 
-    def test_search_with_no_stored_data(self):
+    def test_search_with_no_stored_data(self) -> None:
         """Test search operations with empty database."""
         self.repository.initialize_storage()
 
@@ -309,7 +309,7 @@ class TestSQLiteTableSearchRepository:
         )
         assert len(hybrid_results) == 0
 
-    def test_sanitize_fts5_query(self):
+    def test_sanitize_fts5_query(self) -> None:
         """Test FTS5 query sanitization."""
         self.repository.initialize_storage()
 
@@ -345,7 +345,7 @@ class TestSQLiteTableSearchRepository:
                 # Empty or symbol-only queries might return empty or escaped version
                 assert isinstance(sanitized, str)
 
-    def test_fallback_keyword_search(self):
+    def test_fallback_keyword_search(self) -> None:
         """Test fallback keyword search with LIKE queries."""
         self.repository.initialize_storage()
 
@@ -376,7 +376,7 @@ class TestSQLiteTableSearchRepository:
             assert result.score == 1.0
             assert isinstance(result.table_summary, TableSummary)
 
-    def test_keyword_search_with_fts5_error(self):
+    def test_keyword_search_with_fts5_error(self) -> None:
         """Test keyword search handles FTS5 errors gracefully."""
         self.repository.initialize_storage()
 
@@ -406,7 +406,7 @@ class TestSQLiteTableSearchRepository:
                 assert isinstance(result, SearchResult)
                 assert result.search_type in ["keyword", "keyword_fallback"]
 
-    def test_hybrid_search_with_fts5_fallback(self):
+    def test_hybrid_search_with_fts5_fallback(self) -> None:
         """Test hybrid search works even when FTS5 fails."""
         self.repository.initialize_storage()
 
@@ -440,7 +440,7 @@ class TestSQLiteTableSearchRepository:
             assert isinstance(result.score, float)
             assert result.score > 0
 
-    def test_empty_keyword_fallback_search(self):
+    def test_empty_keyword_fallback_search(self) -> None:
         """Test fallback search with queries that have no extractable keywords."""
         self.repository.initialize_storage()
 
@@ -454,7 +454,7 @@ class TestSQLiteTableSearchRepository:
         # Should return empty results
         assert len(results) == 0
 
-    def test_keyword_search_case_insensitive(self):
+    def test_keyword_search_case_insensitive(self) -> None:
         """Test that fallback keyword search is case insensitive."""
         self.repository.initialize_storage()
 
@@ -478,7 +478,7 @@ class TestSQLiteTableSearchRepository:
             table_names = [r.table_summary.table_name.lower() for r in results]
             assert any("encounter" in name for name in table_names)
 
-    def test_fts5_query_word_extraction(self):
+    def test_fts5_query_word_extraction(self) -> None:
         """Test that query sanitization properly extracts meaningful words."""
         self.repository.initialize_storage()
 
@@ -500,7 +500,7 @@ class TestSQLiteTableSearchRepository:
             for word in expected_words:
                 assert word in sanitized
 
-    def test_large_query_word_limit(self):
+    def test_large_query_word_limit(self) -> None:
         """Test that query sanitization limits the number of words."""
         self.repository.initialize_storage()
 
@@ -513,7 +513,7 @@ class TestSQLiteTableSearchRepository:
         word_count = sanitized.count(" OR ") + 1 if sanitized else 0
         assert word_count <= 10
 
-    def test_connection_cleanup(self):
+    def test_connection_cleanup(self) -> None:
         """Test connection cleanup on object destruction."""
         # Create repository and get connection
         repo = SQLiteTableSearchRepository(self.db_path)
